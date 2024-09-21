@@ -14,7 +14,7 @@ const Login = () => {
 
     return ( 
         <div className="flex w-[70%] h-[70%] justify-center items-center bg-[#EBEBEB] rounded-2xl drop-shadow-2xl">
-            <div className="w-[40%] flex flex-col gap-5 justify-center items-center">
+            <div className="w-[40%] flex flex-col gap-5 justify-center items-center text-black_">
                 <Image 
                     src="/images/plp_logo.png"
                     alt="PLP Logo"
