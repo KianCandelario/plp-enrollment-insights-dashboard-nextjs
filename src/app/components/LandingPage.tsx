@@ -7,7 +7,7 @@ import Link from "next/link";
 const LandingPage = () => {
     return ( 
         <div className="relative w-full flex items-center justify-start">
-            <div className="w-[60%] flex flex-col justify-center items-start text-[#444444] px-10 py-7 z-50">
+            <div className="w-[60%] flex flex-col justify-center items-start text-black_ px-10 py-7 z-50">
                 <div className="flex flex-col justify-center mb-5">
                     <Image 
                         className="mb-7 drop-shadow-2xl"
