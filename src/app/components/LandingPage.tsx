@@ -21,7 +21,8 @@ const LandingPage = () => {
                 
                 <p className={`${quicksand.className} text-left mb-16 drop-shadow-xl`}>Gain actionable insights to inform decisions and <br /> shape the future of education at Pamantasan ng <br /> Lungsod ng Pasig.</p>
 
-                <div className="button w-40 h-12 bg-[#D6EFD8] cursor-pointer select-none active:translate-y-2 active:[box-shadow:0_0px_0_0_#B7B597] active:border-b-[0px] transition-all duration-150 [box-shadow:0_10px_0_0_#508D4E] rounded-full border [5px] border-[#a3ddaa] drop-shadow-xl ease-in-out
+                <div className="button w-40 h-12 bg-[#c6dec8] cursor-pointer select-none active:translate-y-2 active:[box-shadow:0_0px_0_0_#B7B597] active:border-b-[0px] 
+                transition-all duration-150 [box-shadow:0_10px_0_0_#7c8b6f,0_15px_0_0_#94a684] rounded-full border [5px] border-[#a3ddaa] drop-shadow-xl ease-in-out
                 
                 text-red hover:before:bg-redborder-red-500 relative overflow-hidden px-3 shadow-2xl before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-[#E4E4D0] before:transition-all before:duration-500 hover:text-white hover:before:left-0 hover:before:w-full">
                     <Link className={`${quicksand.className} flex justify-center items-center h-full text-[#444444] text-sm font-bold relative z-10`} href={"/login"}>
