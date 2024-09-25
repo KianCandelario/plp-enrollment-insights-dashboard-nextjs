@@ -1,8 +1,74 @@
+'use client';
+
+import Image from 'next/image';
+import { poppins, quicksand } from '../utilities/fonts';
+import { useState } from 'react';
+
 const Login = () => {
+    const [showPassword, setShowPassword] = useState(false);
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+
+
     return ( 
-        <>
-        
-        </>
+        <div className="flex w-[70%] h-[80%] justify-center items-center bg-[#EBEBEB] rounded-2xl drop-shadow-2xl">
+            <div className="w-[40%] flex flex-col gap-5 justify-center items-center text-black_">
+                <Image 
+                    src="/images/plp_logo.png"
+                    alt="PLP Logo"
+                    width={150}
+                    height={150}
+                />
+                <h1 className={`${poppins.className} font-bold text-2xl`}>PLP Admission Office</h1>
+                <div className='w-[75%] mt-5'>
+                    <form className='flex flex-col gap-5 items-center' action="" method="get">
+                        <div className={`${quicksand.className} w-full text-sm flex flex-col gap-1`}>
+                            <label htmlFor="role" className='font-semibold text-xs'>Select your role</label>
+                            <select className='w-full p-2.5 pr-4 rounded-md cursor-pointer focus:border-dark_green focus:ring-dark_green' name="role" id="role">
+                                <option className='text-sm' value="Admin">Admin</option>
+                                <option className='text-sm' value="User">User</option>
+                            </select>    
+                        </div>
+
+                        <div className={`${quicksand.className} flex flex-col gap-1 w-full mb-4`}>
+                            <label className="text-xs font-semibold" htmlFor="password">Password</label>
+                            <input className='px-3 py-2 text-sm rounded-md' 
+                                id="password" 
+                                type={showPassword ? 'text' : 'password'} 
+                                placeholder='Enter password' />
+                            <div className='text-xs flex items-center mt-2 ml-1'>
+                                <input type="checkbox" 
+                                name="show-password" 
+                                id="show-password"
+                                onChange={togglePasswordVisibility}
+                                checked={showPassword} />
+                                <span className='ml-1'>Show password</span>
+                            </div>
+                        </div>
+                        <input className={`${quicksand.className} text-sm gradient-bg w-[40%] h-10 rounded-lg text-[#EBEBEB] font-semibold cursor-pointer drop-shadow-md hover:drop-shadow-xl hover:-translate-y-1 transition-all `} type="submit" value="Log In" />
+                    </form>
+                </div>
+            </div>
+            <div className="h-full w-[60%] bg-[#394033] flex flex-col gap-10 justify-center items-center rounded-2xl rounded-es-3xl rounded-ss-3xl p-5">
+                <div className='relative bg-[#EBEBEB] h-[55%] w-[55%] p-4 rounded-full'>
+                    <Image 
+                        className="relative top-3 drop-shadow-2xl"
+                        src="/images/dashboard.png"
+                        alt="Back to School"
+                        width={400}
+                        height={400}
+                    />
+                </div>
+                <div className='text-white_ flex flex-col justify-center items-center gap-4'>
+                    <h1 className={`${poppins.className} text-3xl font-bold`}>Log In your account</h1>
+                    <p className={`${quicksand.className} text-xs text-center leading-4 text-gray-200`}>
+                        Start exploring PLP's Enrollment Insights Dashboard. <br /> Dive deep into student enrollment data, uncovering trends and patterns <br /> that provide actionable insights.
+                    </p>
+                </div>
+            </div>
+        </div>
     );
 }
  
