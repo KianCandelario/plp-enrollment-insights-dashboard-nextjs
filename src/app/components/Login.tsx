@@ -3,14 +3,32 @@
 import Image from 'next/image';
 import { poppins, quicksand } from '../utilities/fonts';
 import { useState } from 'react';
+import { signIn } from 'next-auth/react';
 
 const Login = () => {
+    const [role, setRole] = useState('admin');
+    const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
 
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault(); // Prevent the form from refreshing the page
+        
+        // Call signIn with role and password
+        const result = await signIn('credentials', {
+            redirect: true, // Set to false if you don't want to redirect automatically
+            role,
+            password,
+            callbackUrl: role === 'admin' ? '/dashboard_admin' : '/dashboard',
+        });
+
+        if (!result?.ok) {
+            console.error('Sign in failed');
+        }
+    };
 
     return ( 
         <div className="flex w-[70%] h-[80%] justify-center items-center bg-[#EBEBEB] rounded-2xl drop-shadow-2xl">
@@ -23,12 +41,18 @@ const Login = () => {
                 />
                 <h1 className={`${poppins.className} font-bold text-2xl`}>PLP Admission Office</h1>
                 <div className='w-[75%] mt-5'>
-                    <form className='flex flex-col gap-5 items-center' action="" method="get">
+                    <form className='flex flex-col gap-5 items-center' onSubmit={handleSubmit}>
                         <div className={`${quicksand.className} w-full text-sm flex flex-col gap-1`}>
-                            <label htmlFor="role" className='font-semibold text-xs'>Select your role</label>
-                            <select className='w-full p-2.5 pr-4 rounded-md cursor-pointer focus:border-dark_green focus:ring-dark_green' name="role" id="role">
-                                <option className='text-sm' value="Admin">Admin</option>
-                                <option className='text-sm' value="User">User</option>
+                            <label 
+                            htmlFor="role" 
+                            className='font-semibold text-xs'>Select your role</label>
+                            <select className='w-full p-2.5 pr-4 rounded-md cursor-pointer focus:border-dark_green focus:ring-dark_green' 
+                            name="role" 
+                            id="role"
+                            value={role}
+                            onChange={(e) => setRole(e.target.value)}>
+                                <option className='text-sm' value="admin">Admin</option>
+                                <option className='text-sm' value="user">User</option>
                             </select>    
                         </div>
 
@@ -37,7 +61,9 @@ const Login = () => {
                             <input className='px-3 py-2 text-sm rounded-md' 
                                 id="password" 
                                 type={showPassword ? 'text' : 'password'} 
-                                placeholder='Enter password' />
+                                placeholder='Enter password'
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)} />
                             <div className='text-xs flex items-center mt-2 ml-1'>
                                 <input type="checkbox" 
                                 name="show-password" 
