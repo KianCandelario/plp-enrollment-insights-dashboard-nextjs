@@ -1,4 +1,4 @@
-import DashboardUser from "../components/DashboardUser";
+import DashboardUser from "./DashboardUser";
 
 const DashboardPageUser = () => {
     return ( 

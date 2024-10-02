@@ -1,4 +1,4 @@
-import DashboardAdmin from "../components/DashboardAdmin";
+import DashboardAdmin from "./DashboardAdmin";
 
 
 const DashboardPageAdmin = () => {
