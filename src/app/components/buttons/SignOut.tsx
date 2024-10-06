@@ -1,16 +1,14 @@
 'use client';
 
 import { signOut } from "next-auth/react";
+import { Button } from "@/components/ui/button"
+import { LogOutIcon } from "lucide-react";
 
-const SignOutButton = () => {
-    return ( 
-        <button
-            className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-            onClick={() => signOut({ callbackUrl: '/' })} // Redirects to '/' after signout
-        >
+export function SignOutButton() {
+  return (
+        <Button size="sm" variant="destructive" onClick={() => signOut({ callbackUrl: '/' })}>
+            <LogOutIcon size={13} className="mr-1"></LogOutIcon>
             Sign Out
-        </button>
-    );
+        </Button>
+    )
 }
- 
-export default SignOutButton;
