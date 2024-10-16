@@ -35,19 +35,19 @@ const chartData = [
 const chartConfig = {
   enrollments: {
     label: "enrollments",
-    color: "hsl(var(--chart-2))",
+    color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig
 
 export function YearlyTrend() {
   return (
-    <Card>
+    <Card className="w-[60%]">
       <CardHeader>
         <CardTitle>Yearly Enrollment Trend</CardTitle>
         <CardDescription>2016 - 2024</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig}>
+        <ChartContainer className="h-64 w-full" config={chartConfig}>
           <LineChart
             accessibilityLayer
             data={chartData}
