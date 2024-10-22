@@ -8,8 +8,8 @@ export const options: NextAuthOptions = {
         CredentialsProvider({
             name: 'Credentials',
             credentials: {
-                role: { 
-                    label: "Role", 
+                username: { 
+                    label: "username", 
                     type: "text" 
                 },
                 password: { 
@@ -23,12 +23,12 @@ export const options: NextAuthOptions = {
                     return null;
                 }
 
-                const { role, password } = credentials;
+                const { username, password } = credentials;
                 
                 try {
                     // Query Firestore to find the user by role
                     const userCollectionRef = collection(db, "users");  // Use collection() to reference "users" collection
-                    const q = query(userCollectionRef, where("role", "==", role), limit(1));  // Query to match the role
+                    const q = query(userCollectionRef, where("username", "==", username), limit(1));  // Query to match the username
                     const userSnapshot = await getDocs(q);  // Execute the query and get the matching documents
           
                     if (userSnapshot.empty) {
@@ -43,7 +43,7 @@ export const options: NextAuthOptions = {
                       // If the password matches, return the user object
                       return {
                         id: userSnapshot.docs[0].id,
-                        role: userData.role,
+                        username: userData.username,
                         userID: userData.userID,  // Assuming you store userID in Firestore
                       };
                     } else {

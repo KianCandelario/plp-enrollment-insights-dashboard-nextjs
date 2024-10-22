@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { GeistSans } from "geist/font/sans";
 
 export const metadata: Metadata = {
   title: "PLP Enrollment Dashboard",
@@ -12,9 +13,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`antialiased`}
+        className={`${GeistSans.className} antialiased text-[#303030] box-border`}
       >
         {children}
       </body>
