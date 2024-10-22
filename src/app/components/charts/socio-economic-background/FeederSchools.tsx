@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { TrendingUp } from "lucide-react"
+import { PieChartIcon, TrendingUp } from "lucide-react"
 import { Label, Pie, PieChart } from "recharts"
 
 import {
@@ -22,49 +22,34 @@ import {
 export const description = "A donut chart with text"
 
 const chartData = [
-  { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-  { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-  { browser: "firefox", visitors: 287, fill: "var(--color-firefox)" },
-  { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
-  { browser: "other", visitors: 190, fill: "var(--color-other)" },
+  { browser: "public", students: 2879, fill: "var(--color-public)" },
+  { browser: "private", students: 1073, fill: "var(--color-private)" },
 ]
 
 const chartConfig = {
-  visitors: {
-    label: "Visitors",
+  students: {
+    label: "students",
   },
-  chrome: {
-    label: "Chrome",
+  public: {
+    label: "public",
     color: "hsl(var(--chart-1))",
   },
-  safari: {
-    label: "Safari",
+  private: {
+    label: "private",
     color: "hsl(var(--chart-2))",
-  },
-  firefox: {
-    label: "Firefox",
-    color: "hsl(var(--chart-3))",
-  },
-  edge: {
-    label: "Edge",
-    color: "hsl(var(--chart-4))",
-  },
-  other: {
-    label: "Other",
-    color: "hsl(var(--chart-5))",
   },
 } satisfies ChartConfig
 
 export function FeederSchools() {
-  const totalVisitors = React.useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.visitors, 0)
+  const totalstudents = React.useMemo(() => {
+    return chartData.reduce((acc, curr) => acc + curr.students, 0)
   }, [])
 
   return (
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
         <CardTitle>Type of Feeder Schools</CardTitle>
-        <CardDescription>Shows the diversity in student origins by school type.</CardDescription>
+        <CardDescription className="flex items-center"><PieChartIcon className="mr-1 h-4 w-4" />Shows the diversity in student origins by school type.</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
@@ -78,7 +63,7 @@ export function FeederSchools() {
             />
             <Pie
               data={chartData}
-              dataKey="visitors"
+              dataKey="students"
               nameKey="browser"
               innerRadius={60}
               strokeWidth={5}
@@ -98,14 +83,14 @@ export function FeederSchools() {
                           y={viewBox.cy}
                           className="fill-foreground text-3xl font-bold"
                         >
-                          {totalVisitors.toLocaleString()}
+                          {totalstudents.toLocaleString()}
                         </tspan>
                         <tspan
                           x={viewBox.cx}
                           y={(viewBox.cy || 0) + 24}
                           className="fill-muted-foreground"
                         >
-                          Visitors
+                          students
                         </tspan>
                       </text>
                     )
@@ -116,14 +101,6 @@ export function FeederSchools() {
           </PieChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col gap-2 text-sm">
-        <div className="flex items-center gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
-        </div>
-      </CardFooter>
     </Card>
   )
 }

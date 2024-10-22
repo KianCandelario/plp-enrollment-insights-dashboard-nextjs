@@ -1,6 +1,6 @@
 "use client"
 
-import { TrendingUp } from "lucide-react"
+import { BarChart2Icon, TrendingUp } from "lucide-react"
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts"
 
 import {
@@ -21,17 +21,14 @@ import {
 export const description = "A bar chart with a label"
 
 const chartData = [
-  { month: "January", desktop: 186 },
-  { month: "February", desktop: 305 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 73 },
-  { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 },
+  { ageGroup: "Less than 18 years old", students: 35 },
+  { ageGroup: "18-22 years old", students: 3631 },
+  { ageGroup: "23 years old and above", students: 286 },
 ]
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  students: {
+    label: "students",
     color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig
@@ -41,7 +38,7 @@ export function Age() {
     <Card>
       <CardHeader>
         <CardTitle>Age</CardTitle>
-        <CardDescription>Age Distribution of the Enrollees</CardDescription>
+        <CardDescription className="flex items-center"><BarChart2Icon className="mr-1 h-4 w-4" />Age Distribution of the Enrollees</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer className="h-44 w-full" config={chartConfig}>
@@ -54,17 +51,17 @@ export function Age() {
           >
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="month"
+              dataKey="ageGroup"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
+              tickFormatter={(value) => value.slice(0, )}
             />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Bar dataKey="desktop" fill="var(--color-desktop)" radius={8}>
+            <Bar dataKey="students" fill="var(--color-students)" radius={8}>
               <LabelList
                 position="top"
                 offset={12}
@@ -75,14 +72,6 @@ export function Age() {
           </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
-        </div>
-      </CardFooter>
     </Card>
   )
 }

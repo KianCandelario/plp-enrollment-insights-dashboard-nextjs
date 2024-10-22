@@ -1,6 +1,6 @@
 "use client"
 
-import { TrendingUp } from "lucide-react"
+import { BarChart2 } from "lucide-react"
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
 
 import {
@@ -21,22 +21,22 @@ import {
 export const description = "A bar chart with a custom label"
 
 const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
+  { barangay: "Pinagbuhatan", students: 918 },
+  { barangay: "Manggahan", students: 353 },
+  { barangay: "Maybunga", students: 277 },
+  { barangay: "Rosario", students: 215 },
+  { barangay: "San Miguel", students: 212},
+  { barangay: "Kapitolyo", students: 27 },
+  { barangay: "Sta. Rosa", students: 20},
 ]
 
+// Sort the chartData array in ascending order based on the number of students
+const sortedChartData = chartData.sort((a, b) => b.students - a.students);
+
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  students: {
+    label: "students",
     color: "hsl(var(--chart-1))",
-  },
-  mobile: {
-    label: "Mobile",
-    color: "hsl(var(--chart-2))",
   },
   label: {
     color: "hsl(var(--background))",
@@ -45,16 +45,16 @@ const chartConfig = {
 
 export function PasigResidentStudents() {
   return (
-    <Card className="w-full">
+    <Card className="flex flex-col w-full">
       <CardHeader>
         <CardTitle>Pasigueño Students</CardTitle>
-        <CardDescription>Distribution of local students</CardDescription>
+        <CardDescription className="flex items-center"><BarChart2 className="mr-1 h-4 w-4" />Distribution of Pasig local students</CardDescription>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig}>
+      <CardContent className="flex-1 w-full">
+        <ChartContainer className="w-full" config={chartConfig}>
           <BarChart
             accessibilityLayer
-            data={chartData}
+            data={sortedChartData} // Use the sorted data
             layout="vertical"
             margin={{
               right: 16,
@@ -62,7 +62,7 @@ export function PasigResidentStudents() {
           >
             <CartesianGrid horizontal={false} />
             <YAxis
-              dataKey="month"
+              dataKey="barangay"
               type="category"
               tickLine={false}
               tickMargin={10}
@@ -70,26 +70,26 @@ export function PasigResidentStudents() {
               tickFormatter={(value) => value.slice(0, 3)}
               hide
             />
-            <XAxis dataKey="desktop" type="number" hide />
+            <XAxis dataKey="students" type="number" hide />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent indicator="line" />}
             />
             <Bar
-              dataKey="desktop"
+              dataKey="students"
               layout="vertical"
-              fill="var(--color-desktop)"
+              fill="var(--color-students)"
               radius={4}
             >
               <LabelList
-                dataKey="month"
+                dataKey="barangay"
                 position="insideLeft"
                 offset={8}
                 className="fill-[--color-label]"
                 fontSize={12}
               />
               <LabelList
-                dataKey="desktop"
+                dataKey="students"
                 position="right"
                 offset={8}
                 className="fill-foreground"
@@ -99,14 +99,8 @@ export function PasigResidentStudents() {
           </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
-        </div>
-      </CardFooter>
+      {/* Make CardFooter take no space */}
+      <CardFooter className="hidden" />
     </Card>
   )
 }

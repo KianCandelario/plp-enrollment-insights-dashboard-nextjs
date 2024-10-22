@@ -1,6 +1,6 @@
 "use client"
 
-import { TrendingUp } from "lucide-react"
+import { BarChart2Icon } from "lucide-react"
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
 
 import {
@@ -60,7 +60,6 @@ export function ApplicantEnrolleeCorrelation() {
               tickFormatter={(value) => value.slice(0, )}
             />
             <ChartTooltip content={<ChartTooltipContent hideLabel />} />
-            <ChartLegend content={<ChartLegendContent />} />
             <Bar
               dataKey="enrollees"
               stackId="a"
@@ -77,8 +76,8 @@ export function ApplicantEnrolleeCorrelation() {
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none">
-            Applicant-to-Enrollee Fallout Over the Last 5 Years <TrendingUp className="h-4 w-4" />
+        <div className="flex gap-2 font-medium leading-none items-center">
+            Applicant-to-Enrollee Fallout Over the Last 5 Years <BarChart2Icon className="h-4 w-4" />
         </div>
       </CardFooter>
     </Card>

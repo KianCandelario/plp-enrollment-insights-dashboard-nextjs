@@ -1,6 +1,6 @@
 "use client"
 
-import { TrendingUp } from "lucide-react"
+import { BarChart2Icon } from "lucide-react"
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts"
 
 import {
@@ -20,18 +20,29 @@ import {
 
 export const description = "A bar chart with a label"
 
+// Original chartData array
 const chartData = [
-  { month: "January", desktop: 186 },
-  { month: "February", desktop: 305 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 73 },
-  { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 },
+  { program: "BSHM", enrollees: 705 },
+  { program: "BSIT", enrollees: 650 },
+  { program: "BSBA", enrollees: 624 },
+  { program: "BSN", enrollees: 396 },
+  { program: "BSA", enrollees: 310 },
+  { program: "BS Entrep", enrollees: 270 },
+  { program: "BEEd", enrollees: 231 },
+  { program: "BSEd - Fil", enrollees: 225 },
+  { program: "BSEd - Eng", enrollees: 214 },
+  { program: "BSECE", enrollees: 168 },
+  { program: "ABPsych", enrollees: 136 },
+  { program: "BSCS", enrollees: 135 },
+  { program: "BSEd - Math", enrollees: 84 },
 ]
 
+// Sort the chartData in ascending order based on the number of enrollees
+const sortedChartData = chartData.sort((a, b) => b.enrollees - a.enrollees);
+
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  enrollees: {
+    label: "enrollees",
     color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig
@@ -41,30 +52,30 @@ export function AcademicProgramEnrollment() {
     <Card className="">
       <CardHeader>
         <CardTitle>Number of Enrollment per Curricular Program</CardTitle>
-        <CardDescription>Enrollees for Every Curricular Program</CardDescription>
+        <CardDescription className="flex items-center"><BarChart2Icon className="h-4 w-4 mr-1" /> Enrollees for Every Curricular Program </CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer className="h-72 w-full" config={chartConfig}>
           <BarChart
             accessibilityLayer
-            data={chartData}
+            data={sortedChartData} // Use the sorted data
             margin={{
               top: 20,
             }}
           >
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="month"
+              dataKey="program"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
+              tickFormatter={(value) => value.slice(0, )}
             />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Bar dataKey="desktop" fill="var(--color-desktop)" radius={8}>
+            <Bar dataKey="enrollees" fill="var(--color-enrollees)" radius={8}>
               <LabelList
                 position="top"
                 offset={12}
@@ -75,11 +86,6 @@ export function AcademicProgramEnrollment() {
           </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-      </CardFooter>
     </Card>
   )
 }

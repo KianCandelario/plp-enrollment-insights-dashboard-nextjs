@@ -15,14 +15,13 @@ import { PasigResidentStudents } from "../charts/applicant-origins/PasigResident
 import { NonPasigResidentStudents } from "../charts/applicant-origins/NonPasigResidentStudents";
 import { Gender } from "../charts/demographics/Gender";
 import { Age } from "../charts/demographics/Age";
-import { CivilStatus } from "../charts/demographics/CivilStatus";
-import { Religion } from "../charts/demographics/Religion";
 import { FamilyMonthlyIncome } from "../charts/socio-economic-background/FamilyMonthlyIncome";
 import { FeederSchools } from "../charts/socio-economic-background/FeederSchools";
+import { CivilStatusAndReligion } from "../charts/tables/CivilStatusAndReligion";
 
 const Dashboard = ({ selectedCollege }: any) => {
   return (
-    <div className="z-10 flex flex-col p-10 space-y-5 bg-gray-100">
+    <div className="z-10 flex flex-col p-10 space-y-5 bg-gray-50">
       <Card>
         <CardHeader>
           <CardTitle>
@@ -89,8 +88,7 @@ const Dashboard = ({ selectedCollege }: any) => {
               <Age></Age>
             </div>
             <div className="flex flex-1 gap-3 w-[60%]">
-              <CivilStatus></CivilStatus>
-              <Religion></Religion>
+              <CivilStatusAndReligion></CivilStatusAndReligion>
             </div>
           </div>
           
@@ -102,13 +100,14 @@ const Dashboard = ({ selectedCollege }: any) => {
            <h1 className={`${poppins.className} text-2xl font-bold ml-3`}>Socio-Economic Background</h1>
           </div>
           <div className="flex gap-3">
-            <div className="w-[65%]">
+            <div className="w-[63%]">
               <FamilyMonthlyIncome></FamilyMonthlyIncome> 
             </div>
-            <FeederSchools></FeederSchools> 
+            <div className="w-[37%]">
+              <FeederSchools></FeederSchools>
+            </div> 
           </div>
         </div>
-
       </div>
     </div>
   );

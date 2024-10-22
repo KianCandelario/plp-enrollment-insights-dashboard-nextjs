@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { TrendingUp } from "lucide-react"
+import { PieChartIcon } from "lucide-react"
 import { Label, Pie, PieChart } from "recharts"
 
 import {
@@ -22,49 +22,34 @@ import {
 export const description = "A donut chart with text"
 
 const chartData = [
-  { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-  { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-  { browser: "firefox", visitors: 287, fill: "var(--color-firefox)" },
-  { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
-  { browser: "other", visitors: 190, fill: "var(--color-other)" },
+  { residency: "Pasig", population: 3702, fill: "var(--color-pasig)" },
+  { residency: "Non-Pasig", population: 250, fill: "var(--color-nonpasig)" },
 ]
 
 const chartConfig = {
-  visitors: {
-    label: "Visitors",
+  population: {
+    label: "population",
   },
-  chrome: {
-    label: "Chrome",
+  pasig: {
+    label: "pasig",
     color: "hsl(var(--chart-1))",
   },
-  safari: {
-    label: "Safari",
+  nonpasig: {
+    label: "nonpasig",
     color: "hsl(var(--chart-2))",
-  },
-  firefox: {
-    label: "Firefox",
-    color: "hsl(var(--chart-3))",
-  },
-  edge: {
-    label: "Edge",
-    color: "hsl(var(--chart-4))",
-  },
-  other: {
-    label: "Other",
-    color: "hsl(var(--chart-5))",
   },
 } satisfies ChartConfig
 
 export function Residency() {
-  const totalVisitors = React.useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.visitors, 0)
+  const totalpopulation = React.useMemo(() => {
+    return chartData.reduce((acc, curr) => acc + curr.population, 0)
   }, [])
 
   return (
     <Card className="flex flex-col w-full">
       <CardHeader className="items-center pb-0">
         <CardTitle>Residency</CardTitle>
-        <CardDescription>Pasigueno or Non-Pasigueno</CardDescription>
+        <CardDescription className="flex items-center"><PieChartIcon className="mr-1 h-4 w-4" /> Pasigueno or Non-Pasigueno</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
@@ -78,8 +63,8 @@ export function Residency() {
             />
             <Pie
               data={chartData}
-              dataKey="visitors"
-              nameKey="browser"
+              dataKey="population"
+              nameKey="residency"
               innerRadius={60}
               strokeWidth={5}
             >
@@ -98,14 +83,14 @@ export function Residency() {
                           y={viewBox.cy}
                           className="fill-foreground text-3xl font-bold"
                         >
-                          {totalVisitors.toLocaleString()}
+                          {totalpopulation.toLocaleString()}
                         </tspan>
                         <tspan
                           x={viewBox.cx}
                           y={(viewBox.cy || 0) + 24}
                           className="fill-muted-foreground"
                         >
-                          Visitors
+                          Population
                         </tspan>
                       </text>
                     )
@@ -116,14 +101,6 @@ export function Residency() {
           </PieChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col gap-2 text-sm">
-        <div className="flex items-center gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
-        </div>
-      </CardFooter>
     </Card>
   )
 }

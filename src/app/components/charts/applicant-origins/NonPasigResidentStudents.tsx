@@ -1,6 +1,6 @@
 "use client"
 
-import { TrendingUp } from "lucide-react"
+import { BarChart2 } from "lucide-react"
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
 
 import {
@@ -21,17 +21,18 @@ import {
 export const description = "A bar chart with a custom label"
 
 const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
+  { barangay: "Cainta", students: 64},
+  { barangay: "Taytay", students: 57},
+  { barangay: "Taguig City", students: 54},
+  { barangay: "Pateros", students: 34},
+  { barangay: "Antipolo", students: 11},
+  { barangay: "Marikina City", students: 4},
+  { barangay: "Binangonan", students: 3}
 ]
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  students: {
+    label: "students",
     color: "hsl(var(--chart-1))",
   },
   mobile: {
@@ -48,7 +49,7 @@ export function NonPasigResidentStudents() {
     <Card className="w-full">
       <CardHeader>
         <CardTitle>Non-Pasig Resident Students</CardTitle>
-        <CardDescription>Enrollees from outside Pasig</CardDescription>
+        <CardDescription className="flex items-center"><BarChart2 className="mr-1 h-4 w-4" /> Enrollees from outside Pasig</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -62,7 +63,7 @@ export function NonPasigResidentStudents() {
           >
             <CartesianGrid horizontal={false} />
             <YAxis
-              dataKey="month"
+              dataKey="barangay"
               type="category"
               tickLine={false}
               tickMargin={10}
@@ -70,26 +71,26 @@ export function NonPasigResidentStudents() {
               tickFormatter={(value) => value.slice(0, 3)}
               hide
             />
-            <XAxis dataKey="desktop" type="number" hide />
+            <XAxis dataKey="students" type="number" hide />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent indicator="line" />}
             />
             <Bar
-              dataKey="desktop"
+              dataKey="students"
               layout="vertical"
-              fill="var(--color-desktop)"
+              fill="var(--color-students)"
               radius={4}
             >
               <LabelList
-                dataKey="month"
+                dataKey="barangay"
                 position="insideLeft"
                 offset={8}
                 className="fill-[--color-label]"
                 fontSize={12}
               />
               <LabelList
-                dataKey="desktop"
+                dataKey="students"
                 position="right"
                 offset={8}
                 className="fill-foreground"
@@ -99,14 +100,6 @@ export function NonPasigResidentStudents() {
           </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
-        </div>
-      </CardFooter>
     </Card>
   )
 }

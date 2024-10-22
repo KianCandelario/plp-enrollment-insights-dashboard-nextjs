@@ -1,6 +1,6 @@
 "use client"
 
-import { TrendingUp } from "lucide-react"
+import { PieChartIcon, TrendingUp } from "lucide-react"
 import { Label, PolarRadiusAxis, RadialBar, RadialBarChart } from "recharts"
 
 import {
@@ -14,33 +14,35 @@ import {
 import {
   ChartConfig,
   ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
 
 export const description = "A radial chart with stacked sections"
 
-const chartData = [{ month: "january", desktop: 1260, mobile: 570 }]
+const chartData = [{ gender: "january", female: 2666, male: 1483 }]
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  female: {
+    label: "Female",
     color: "hsl(var(--chart-1))",
   },
-  mobile: {
-    label: "Mobile",
+  male: {
+    label: "Male",
     color: "hsl(var(--chart-2))",
   },
 } satisfies ChartConfig
 
 export function Gender() {
-  const totalVisitors = chartData[0].desktop + chartData[0].mobile
+  const totalVisitors = chartData[0].female + chartData[0].male
 
   return (
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
         <CardTitle>Gender</CardTitle>
-        <CardDescription>Male-to-Female Ratio</CardDescription>
+        <CardDescription className="flex items-center"><PieChartIcon className="mr-1 h-4 w-4" />Male-to-Female Ratio</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-1 items-center pb-0">
         <ChartContainer
@@ -57,6 +59,8 @@ export function Gender() {
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
+            {/* Legend configuration */}
+            <ChartLegend content={<ChartLegendContent  />} />
             <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
               <Label
                 content={({ viewBox }) => {
@@ -75,7 +79,7 @@ export function Gender() {
                           y={(viewBox.cy || 0) + 4}
                           className="fill-muted-foreground"
                         >
-                          Visitors
+                          Population
                         </tspan>
                       </text>
                     )
@@ -84,15 +88,15 @@ export function Gender() {
               />
             </PolarRadiusAxis>
             <RadialBar
-              dataKey="desktop"
+              dataKey="female"
               stackId="a"
               cornerRadius={5}
-              fill="var(--color-desktop)"
+              fill="var(--color-female)"
               className="stroke-transparent stroke-2"
             />
             <RadialBar
-              dataKey="mobile"
-              fill="var(--color-mobile)"
+              dataKey="male"
+              fill="var(--color-male)"
               stackId="a"
               cornerRadius={5}
               className="stroke-transparent stroke-2"
@@ -100,14 +104,6 @@ export function Gender() {
           </RadialBarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col gap-2 text-sm">
-        <div className="flex items-center gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
-        </div>
-      </CardFooter>
     </Card>
   )
 }

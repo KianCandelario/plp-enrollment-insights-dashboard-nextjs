@@ -1,85 +1,59 @@
-"use client"
-
-import { TrendingUp } from "lucide-react"
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
-
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart"
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
-export const description = "A stacked bar chart with a legend"
-
-const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
+const stud_civil_status = [
+  {
+    civil_status: "Living with Partner",
+    population: "15",
+  },
+  {
+    civil_status: "Married",
+    population: "54",
+  },
+  {
+    civil_status: "Separated",
+    population: "3",
+  },
+  {
+    civil_status: "Single",
+    population: "3869",
+  },
+  {
+    civil_status: "Single Parent",
+    population: "8",
+  },
+  {
+    civil_status: "Widower",
+    population: "3",
+  },
 ]
-
-const chartConfig = {
-  desktop: {
-    label: "Desktop",
-    color: "hsl(var(--chart-1))",
-  },
-  mobile: {
-    label: "Mobile",
-    color: "hsl(var(--chart-2))",
-  },
-} satisfies ChartConfig
 
 export function CivilStatus() {
   return (
-    <Card className="flex flex-col w-[50%]">
-      <CardHeader>
-        <CardTitle>Civil Status</CardTitle>
-        <CardDescription>Civil Status of the Enrollees</CardDescription>
-      </CardHeader>
-      <CardContent className="flex-1 flex justify-center items-center">
-        <ChartContainer className="h-full w-48" config={chartConfig}>
-          <BarChart accessibilityLayer data={chartData}>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="month"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
-            />
-            <ChartTooltip content={<ChartTooltipContent hideLabel />} />
-            <ChartLegend content={<ChartLegendContent />} />
-            <Bar
-              dataKey="desktop"
-              stackId="a"
-              fill="var(--color-desktop)"
-              radius={[0, 0, 4, 4]}
-            />
-            <Bar
-              dataKey="mobile"
-              stackId="a"
-              fill="var(--color-mobile)"
-              radius={[4, 4, 0, 0]}
-            />
-          </BarChart>
-        </ChartContainer>
-      </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
-        </div>
-      </CardFooter>
-    </Card>
+    <Table>
+      <TableCaption>Provides insights into the proportion of single, married, <br /> and other categories among enrollees.</TableCaption>
+      <TableHeader>
+        <TableRow>
+          <TableHead className="w-[90%]">Civil Status</TableHead>
+          <TableHead>Population</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {stud_civil_status.map((civil_status) => (
+          <TableRow key={civil_status.civil_status} className="h-14">
+            <TableCell className="font-medium">{civil_status.civil_status}</TableCell>
+            <TableCell>{civil_status.population}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   )
 }
