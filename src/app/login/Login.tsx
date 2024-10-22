@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 
 const Login = () => {
-    const [role, setRole] = useState('admin');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
 
@@ -17,16 +17,16 @@ const Login = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault(); // Prevent the form from refreshing the page
         
-        // Call signIn with role and password
+        // Call signIn with username and password
         const result = await signIn('credentials', {
-            redirect: true, // Set to false if you don't want to redirect automatically
-            role,
+            redirect: true,
+            username,
             password,
-            callbackUrl: role === 'admin' ? '/dashboard_admin' : '/dashboard',
+            callbackUrl: '/dashboard',
         });
 
         if (!result?.ok) {
-            console.error('Sign in failed');
+            window.Error('SignIn failed');
         }
     };
 
@@ -44,16 +44,17 @@ const Login = () => {
                     <form className='flex flex-col gap-5 items-center' onSubmit={handleSubmit}>
                         <div className={`${quicksand.className} w-full text-sm flex flex-col gap-1`}>
                             <label 
-                            htmlFor="role" 
-                            className='font-semibold text-xs'>Select your role</label>
-                            <select className='w-full p-2.5 pr-4 rounded-md cursor-pointer focus:border-dark_green focus:ring-dark_green' 
-                            name="role" 
-                            id="role"
-                            value={role}
-                            onChange={(e) => setRole(e.target.value)}>
-                                <option className='text-sm' value="admin">Admin</option>
-                                <option className='text-sm' value="user">User</option>
-                            </select>    
+                            htmlFor="username" 
+                            className='font-semibold text-xs'>Username</label>
+                            <input 
+                                className='px-3 py-2' 
+                                type="text" 
+                                name="username" 
+                                id="username" 
+                                placeholder='Enter username' 
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)} />
+                            
                         </div>
 
                         <div className={`${quicksand.className} flex flex-col gap-1 w-full mb-4`}>
