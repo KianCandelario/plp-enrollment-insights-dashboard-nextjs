@@ -30,13 +30,44 @@
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #b8b8b8;
+  background: #dbdbdb;
   border-radius: 5px;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #aaaaaa;
+  background: #d4d4d4;
+}
+
+
+/* Add this CSS to your styles */
+@keyframes bounce {
+  0%, 100% {
+      transform: translateX(0);
+  }
+  50% {
+      transform: translateX(5px);
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+      transform: translateX(0);
+  }
+  25% {
+      transform: translateY(-2px);
+  }
+  75% {
+      transform: translateY(2px);
+  }
+}
+
+.button-bounce {
+  animation: bounce 0.5s infinite;
+}
+
+.button-shake {
+  animation: shake 0.5s infinite;
 }
 
 
