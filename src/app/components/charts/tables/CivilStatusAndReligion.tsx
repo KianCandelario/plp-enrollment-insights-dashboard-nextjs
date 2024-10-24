@@ -19,9 +19,9 @@ import {
 export function CivilStatusAndReligion() {
   return (
     <Tabs defaultValue="civil_status" className="w-full h-full">
-      <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="civil_status">Civil Status</TabsTrigger>
-        <TabsTrigger value="religion">Religion</TabsTrigger>
+      <TabsList className="grid w-full grid-cols-2 rounded">
+        <TabsTrigger className="rounded" value="civil_status">Civil Status</TabsTrigger>
+        <TabsTrigger className="rounded" value="religion">Religion</TabsTrigger>
       </TabsList>
       <TabsContent className="h-full" value="civil_status">
         <Card className="flex flex-col h-[93%]">
