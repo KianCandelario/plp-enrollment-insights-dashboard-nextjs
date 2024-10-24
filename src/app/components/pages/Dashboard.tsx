@@ -4,7 +4,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -25,20 +24,18 @@ const Dashboard = ({ selectedCollege }: any) => {
       <Card>
         <CardHeader>
           <CardTitle>
-            <h1 className={`${poppins.className} text-4xl font-bold`}>
+            <span className={`${poppins.className} text-4xl font-bold`}>
               PLP Enrollment Insights & Forecasting
-            </h1>
+            </span>
           </CardTitle>
           <CardDescription>
-            <p className={`${quicksand.className} `}>
+            <span className={`${quicksand.className} `}>
               Data-Driven Decision Support for Planning and Resource Allocation
-            </p>
+            </span>
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className={``}>
-            <span className="font-bold">Selected College:</span> {selectedCollege}
-          </p>
+          <span className="font-bold">Selected College:</span> {selectedCollege}
         </CardContent>
       </Card>
 
