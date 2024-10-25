@@ -1,18 +1,17 @@
 "use client";
 
-import { InfoIcon } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { SignOutButton } from "@/app/components/buttons/SignOut";
 import { quicksand } from "../utilities/fonts";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar" 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
+import { UploadFile } from "./buttons/UploadFile";
+import { InfoButton } from "./buttons/InfoButton";
 
 export function SideBar({children}: any) {
     return ( 
         <div className="h-screen flex flex-col border-r min-h-screen bg-gray-100">
             <div className="w-full flex justify-end py-3 pr-3">
-                <Button className="rounded" variant="outline" size="icon">
-                    <InfoIcon className="h-5 w-5" />
-                </Button>
+                <InfoButton />
             </div>
             <p className="text-slate-500 text-xs font-bold mb-3 pl-3">Colleges</p>
             <div className="flex-1 w-full px-3 overflow-y-auto">
@@ -22,7 +21,8 @@ export function SideBar({children}: any) {
                     </ul>
                 </div>
             </div>
-            <div className="px-3 py-3 mt-2 border-t border-gray-300 flex flex-col justify-center">
+            <Separator className="mt-2" />
+            <div className="px-3 py-3 border-gray-300 flex flex-col justify-center">
                 <div className="flex items-center mb-2">
                 <Avatar>
                     <AvatarImage src="/images/plp_logo.png" />
@@ -31,13 +31,20 @@ export function SideBar({children}: any) {
                     
                     <div className="ml-2">
                         <p className="text-xs text-slate-500">Currently signed in:</p>
-                        <p className={`${quicksand.className} font-bold`}>PLP SSO</p>
+                        <p className={`${quicksand.className} font-bold`}>PLP-SSO</p>
                     </div>
                 </div>
-                <div className="flex justify-end">
-                    <SignOutButton />
+                <div className="w-full flex justify-center mt-2">
+                    <div className="w-[60%]">
+                        <UploadFile />
+                    </div>
+
+                    <Separator orientation="vertical" className="mx-2" />
+
+                    <div className="">
+                        <SignOutButton />
+                    </div>
                 </div>
-                
             </div>
         </div>
     );
