@@ -6,6 +6,13 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { LogInIcon } from "lucide-react";
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+
 const LandingPage = () => {
   return (
     <div className="relative w-full flex items-center justify-start">
@@ -26,24 +33,32 @@ const LandingPage = () => {
         </div>
 
         <p className={`${quicksand.className} text-left mb-16 drop-shadow-xl`}>
-          Gain actionable insights to inform decisions and <br /> shape the
+          Gain actionable insights to inform decisions and shape <br /> the
           future of education at Pamantasan ng <br /> Lungsod ng Pasig.
         </p>
-
-        <Button
-          className="bg-[#94a684] rounded h-12 w-36 font-semibold">
-          <Link
-            className={`${quicksand.className} flex justify-center items-center h-full text-sm relative z-10`}
-            href={"/login"}
-          >
-            <LogInIcon 
-              width={18}
-              height={18}
-              className="mr-2.5"
-            />
-            Get Started
-          </Link>
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                className="bg-[#94a684] rounded h-12 w-36 font-semibold">
+                <Link
+                  className={`${quicksand.className} flex justify-center items-center h-full text-sm relative z-10`}
+                  href={"/login"}
+                >
+                  <LogInIcon 
+                    width={18}
+                    height={18}
+                    className="mr-2.5"
+                  />
+                  Get Started
+                </Link>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent className="rounded mb-1">
+              <p className={`${quicksand.className}`}>Go to Login page</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
       <div className="absolute left-1/2">
         <Image
