@@ -29,7 +29,7 @@ export function SignOutButton() {
             <AlertDialogHeader>
                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                 <AlertDialogDescription>
-                    You're about to sign out of the website. Are you sure you want to continue?
+                    You're about to sign out of the website and it will lead you back to the landing page. Are you sure you want to continue?
                 </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
