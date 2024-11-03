@@ -1,3 +1,4 @@
+// dashboard/page.tsx
 "use client";
 
 import Dashboard from "@/app/components/pages/Dashboard";
@@ -39,8 +40,8 @@ const DashboardPageUser = () => {
           <SideBarItem 
             icon={<ComputerIcon size={17} />}
             text="BSCS"
-            active={selectedCollege === 'Bachelor of Science in Computer Science'}
-            onClick={() => handleCollegeSelection('Bachelor of Science in Computer Science')}
+            active={selectedCollege === 'BSCS'}
+            onClick={() => handleCollegeSelection('BSCS')}
           />
           <SideBarItem 
             icon={<FolderCode size={17} />}
@@ -64,26 +65,26 @@ const DashboardPageUser = () => {
           <SideBarItem 
             icon={<BookOpenIcon size={17} />}
             text="BEEd"
-            active={selectedCollege === 'BEEd'}
-            onClick={() => handleCollegeSelection('BEEd')}
+            active={selectedCollege === 'BEED'}
+            onClick={() => handleCollegeSelection('BEED')}
           />
           <SideBarItem 
             icon={<BookTextIcon size={17} />}
             text="BSEd Major in Filipino"
-            active={selectedCollege === 'BSEd Major in Filipino'}
-            onClick={() => handleCollegeSelection('BSEd Major in Filipino')}
+            active={selectedCollege === 'BSED-FIL'}
+            onClick={() => handleCollegeSelection('BSED-FIL')}
           />
           <SideBarItem 
             icon={<BookTextIcon size={17} />}
             text="BSEd Major in English"
-            active={selectedCollege === 'BSEd Major in English'}
-            onClick={() => handleCollegeSelection('BSEd Major in English')}
+            active={selectedCollege === 'BSED-ENG'}
+            onClick={() => handleCollegeSelection('BSED-ENG')}
           />
           <SideBarItem 
             icon={<BookXIcon size={17} />}
             text="BSEd Major in Math"
-            active={selectedCollege === 'BSEd Major in Math'}
-            onClick={() => handleCollegeSelection('BSEd Major in Math')}
+            active={selectedCollege === 'BSED-MATH'}
+            onClick={() => handleCollegeSelection('BSED-MATH')}
           />
 
           <SideBarItem 
