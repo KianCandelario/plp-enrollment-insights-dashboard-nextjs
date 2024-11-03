@@ -24,6 +24,7 @@ interface ErrorState {
 
 export function UploadFile() {
     const [files, setFiles] = useState<FileState>({
+        'Applicant-to-Enrollee Correlation': null,
         'Number of Enrollment per Curricular Program': null,
         'Applicant Origins': null,
         'Demographics Summary': null,
@@ -77,7 +78,10 @@ export function UploadFile() {
         }
     };
     
+    // Split visualizations into two rows
     const visualizations = Object.keys(files);
+    const firstRow = visualizations.slice(0, 3);
+    const secondRow = visualizations.slice(3);
     
     return (
         <Drawer>
@@ -86,20 +90,98 @@ export function UploadFile() {
                     <UploadIcon className="h-3 w-3 mr-1" /> Upload File
                 </Button>
             </DrawerTrigger>
-            <DrawerContent>
-                <div className="mx-auto w-full max-w-4xl">
+            <DrawerContent className="h-[77vh]">
+                <div className="mx-auto w-full max-w-5xl">
                     <DrawerHeader>
                         <DrawerTitle>Upload the CSV Files</DrawerTitle>
                         <DrawerDescription>Provide all required documents to be able to submit.</DrawerDescription>
                     </DrawerHeader>
                     
-                    <div className="p-2">
-                        <div className="grid grid-cols-2 gap-4">
-                            {visualizations.map((viz) => (
+                    <div className="p-4">
+                        {/* First row - 3 items */}
+                        <div className="grid grid-cols-3 gap-4 mb-4">
+                            {firstRow.map((viz) => (
                                 <div key={viz} className="space-y-2">
-                                    <div className="flex justify-between items-center">
-                                        <p className="text-sm font-medium">{viz}</p>
-                                        <div className="flex items-center gap-2">
+                                    <div className="flex items-center min-w-0">
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium truncate pr-2">
+                                                {viz} <span className="text-red-500">*</span>
+                                            </p>
+                                        </div>
+                                        <div className="flex items-center gap-2 flex-shrink-0">
+                                            {files[viz] && !errors[viz] && (
+                                                <>
+                                                    <CheckCircle className="h-4 w-4 text-green-500" />
+                                                    <button
+                                                        onClick={() => handleRemoveFile(viz)}
+                                                        className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                                                        title="Remove file"
+                                                    >
+                                                        <Trash2 className="h-4 w-4 text-red-500" />
+                                                    </button>
+                                                </>
+                                            )}
+                                            {errors[viz] && (
+                                                <>
+                                                    <XCircle className="h-4 w-4 text-red-500" />
+                                                    <button
+                                                        onClick={() => handleRemoveFile(viz)}
+                                                        className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                                                        title="Remove file"
+                                                    >
+                                                        <Trash2 className="h-4 w-4 text-red-500" />
+                                                    </button>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col items-center justify-center w-full">
+                                        <label 
+                                            className={cn(
+                                                "flex flex-col items-center justify-center w-full h-28 border-2 border-dashed cursor-pointer transition-colors rounded",
+                                                errors[viz] ? "border-red-400 bg-red-50 hover:bg-red-100" : 
+                                                files[viz] ? "border-green-400 bg-green-50 hover:bg-green-100" :
+                                                "bg-gray-50 hover:bg-gray-100"
+                                            )}
+                                        >
+                                            <div className="flex flex-col items-center justify-center pt-4 pb-4 w-full max-w-[90%]">
+                                                <Upload className={cn(
+                                                    "h-5 w-5 mb-2",
+                                                    errors[viz] ? "text-red-500" : 
+                                                    files[viz] ? "text-green-500" : 
+                                                    "text-gray-500"
+                                                )} />
+                                                <p className="text-sm text-gray-500 truncate w-full text-center overflow-hidden">
+                                                    {files[viz]?.name || <span className="font-semibold">Click to upload</span>}
+                                                </p>
+                                                <p className="text-xs text-gray-500">CSV files only</p>
+                                            </div>
+                                            <input 
+                                                type="file" 
+                                                className="hidden" 
+                                                accept=".csv"
+                                                onChange={(e) => handleFileChange(viz, e)}
+                                            />
+                                        </label>
+                                        {errors[viz] && (
+                                            <p className="text-xs text-red-500 mt-1">{errors[viz]}</p>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        
+                        {/* Second row - 2 items */}
+                        <div className="grid grid-cols-2 gap-4">
+                            {secondRow.map((viz) => (
+                                <div key={viz} className="space-y-2">
+                                    <div className="flex items-center min-w-0">
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium truncate pr-2">
+                                                {viz} <span className="text-red-500">*</span>
+                                            </p>
+                                        </div>
+                                        <div className="flex items-center gap-2 flex-shrink-0">
                                             {files[viz] && !errors[viz] && (
                                                 <>
                                                     <CheckCircle className="h-4 w-4 text-green-500" />

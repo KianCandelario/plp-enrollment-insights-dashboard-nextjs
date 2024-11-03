@@ -1,3 +1,5 @@
+// components/Dashboard.tsx
+
 import { poppins, quicksand } from "@/app/utilities/fonts";
 import { YearlyTrend } from "../charts/enrollments/YearlyTrend";
 import {
@@ -17,16 +19,27 @@ import { Age } from "../charts/demographics/Age";
 import { FamilyMonthlyIncome } from "../charts/socio-economic-background/FamilyMonthlyIncome";
 import { FeederSchools } from "../charts/socio-economic-background/FeederSchools";
 import { CivilStatusAndReligion } from "../charts/tables/CivilStatusAndReligion";
+import { Button } from "@/components/ui/button";
+import { RotateCcwIcon } from "lucide-react";
+import { COURSE_CODE_MAP } from '@/app/utilities/courseMapping';
 
-const Dashboard = ({ selectedCollege }: any) => {
+interface DashboardProps {
+  selectedCollege: string;
+}
+
+const Dashboard = ({ selectedCollege }: DashboardProps) => {
   return (
     <div className="z-10 flex flex-col p-10 space-y-5 bg-gray-50">
       <Card>
         <CardHeader>
-          <CardTitle>
+          <CardTitle className="flex justify-between items-center">
             <span className={`${poppins.className} text-4xl font-bold`}>
               PLP Enrollment Insights & Forecasting
             </span>
+            <Button variant="destructive" className="rounded" size="sm">
+              <RotateCcwIcon size={13} className="mr-1" />
+              Reset Visualizations
+            </Button>
           </CardTitle>
           <CardDescription>
             <span className={`${quicksand.className} `}>
@@ -44,10 +57,14 @@ const Dashboard = ({ selectedCollege }: any) => {
         {/* Enrollments */}
         <div className="flex flex-col gap-3">
           <div>
-           <h1 className={`${poppins.className} text-2xl font-bold ml-3`}>Enrollment Overview</h1>
+            <h1 className={`${poppins.className} text-2xl font-bold ml-3`}>
+              Enrollment Overview
+            </h1>
           </div>
           <div className="flex gap-3">
-            <YearlyTrend></YearlyTrend>
+            <YearlyTrend 
+              courseCode={selectedCollege || 'GRAND_TOTAL'} 
+            />
             <ApplicantEnrolleeCorrelation></ApplicantEnrolleeCorrelation>
           </div>
           <div>
