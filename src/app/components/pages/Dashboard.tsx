@@ -19,9 +19,8 @@ import { Age } from "../charts/demographics/Age";
 import { FamilyMonthlyIncome } from "../charts/socio-economic-background/FamilyMonthlyIncome";
 import { FeederSchools } from "../charts/socio-economic-background/FeederSchools";
 import { CivilStatusAndReligion } from "../charts/tables/CivilStatusAndReligion";
-import { Button } from "@/components/ui/button";
-import { RotateCcwIcon } from "lucide-react";
 import { COURSE_CODE_MAP } from '@/app/utilities/courseMapping';
+import ResetVisualization from "../buttons/ResetVisualization";
 
 interface DashboardProps {
   selectedCollege: string;
@@ -36,10 +35,7 @@ const Dashboard = ({ selectedCollege }: DashboardProps) => {
             <span className={`${poppins.className} text-4xl font-bold`}>
               PLP Enrollment Insights & Forecasting
             </span>
-            <Button variant="destructive" className="rounded" size="sm">
-              <RotateCcwIcon size={13} className="mr-1" />
-              Reset Visualizations
-            </Button>
+            <ResetVisualization />
           </CardTitle>
           <CardDescription>
             <span className={`${quicksand.className} `}>
@@ -65,7 +61,7 @@ const Dashboard = ({ selectedCollege }: DashboardProps) => {
             <YearlyTrend 
               courseCode={selectedCollege || 'GRAND_TOTAL'} 
             />
-            <ApplicantEnrolleeCorrelation></ApplicantEnrolleeCorrelation>
+            <ApplicantEnrolleeCorrelation course={selectedCollege} />
           </div>
           <div>
             <AcademicProgramEnrollment></AcademicProgramEnrollment>
