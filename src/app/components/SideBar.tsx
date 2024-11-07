@@ -1,11 +1,10 @@
 "use client";
 
 import { SignOutButton } from "@/app/components/buttons/SignOut";
-import { quicksand } from "../utilities/fonts";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { UploadFile } from "./buttons/UploadFile";
 import { InfoButton } from "./buttons/InfoButton";
+import Account from "./buttons/Account";
 
 export function SideBar({children}: any) {
     return ( 
@@ -21,18 +20,10 @@ export function SideBar({children}: any) {
                     </ul>
                 </div>
             </div>
-            <Separator className="mt-2" />
+            <Separator className="mt-1.5" />
             <div className="px-3 py-3 border-gray-300 flex flex-col justify-center">
-                <div className="flex items-center mb-2">
-                <Avatar>
-                    <AvatarImage src="/images/plp_logo.png" />
-                    <AvatarFallback>PLP Logo</AvatarFallback>
-                </Avatar>
-                    
-                    <div className="ml-2">
-                        <p className="text-xs text-slate-500">Currently signed in:</p>
-                        <p className={`${quicksand.className} font-bold`}>PLP-SSO</p>
-                    </div>
+                <div className="w-full h-14">
+                    <Account />
                 </div>
                 <div className="w-full flex justify-center mt-2">
                     <div className="w-[60%]">
