@@ -101,7 +101,7 @@ const Login = () => {
 
                         {/* Button text changes to "Signing in..." and animates when loading */}
                         <input 
-                            className={`${quicksand.className} text-sm gradient-bg w-[40%] h-10 rounded text-[#EBEBEB] font-semibold cursor-pointer drop-shadow-md hover:drop-shadow-xl transition-all ${loading ? 'button-shake' : ''}`} 
+                            className={`${quicksand.className} text-sm gradient-bg w-[45%] h-10 rounded text-[#EBEBEB] font-semibold cursor-pointer drop-shadow-md hover:drop-shadow-xl transition-all ${loading ? 'button-shake' : ''}`} 
                             type="submit" 
                             value={loading ? "Signing in..." : "Log In"} 
                             disabled={loading} // Disable the button while loading
