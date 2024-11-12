@@ -22,5 +22,5 @@ for year in range(2020, 2026):
         })
 
 df = pd.DataFrame(data)
-df.to_csv('applicant_enrollee_data.csv', index=False)
-print("Data saved to 'applicant_enrollee_data.csv'")
+df.to_csv('applicant_enrollee_sample.csv', index=False)
+print("Data saved to 'applicant_enrollee_sample.csv'")
