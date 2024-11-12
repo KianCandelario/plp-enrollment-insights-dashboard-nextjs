@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/drawer";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { poppins } from '@/app/utilities/fonts';
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -74,28 +75,43 @@ export function UploadFile() {
     const handleSubmit = async () => {
         if (isAllFilesUploaded()) {
             try {
+                // Submit Applicant-to-Enrollee Correlation
                 const correlationFile = files['Applicant-to-Enrollee Correlation'];
-                if (!correlationFile) return;
+                if (correlationFile) {
+                    const formData = new FormData();
+                    formData.append('file', correlationFile);
     
-                const formData = new FormData();
-                formData.append('file', correlationFile);
+                    const response = await fetch('/api/applicant-enrollee', {
+                        method: 'POST',
+                        body: formData,
+                    });
     
-                const response = await fetch('/api/applicant-enrollee', {
-                    method: 'POST',
-                    body: formData,
-                });
-    
-                if (response.ok) {
-                    toast.success("File uploaded successfully! Reloading...", { autoClose: 3000 });
-                    setTimeout(() => {
-                        window.location.reload(); // Reload page after 3 seconds
-                    }, 3000);
-                } else {
-                    throw new Error("File upload failed");
+                    if (!response.ok) throw new Error("File upload for Applicant-to-Enrollee failed");
                 }
-                
+
+                // Submit Cleaned Data CSV
+                const cleanedDataFile = files['Cleaned Data CSV'];
+                if (cleanedDataFile) {
+                    const formData = new FormData();
+                    formData.append('file', cleanedDataFile);
+    
+                    const response = await fetch('/api/cleaned-data', {
+                        method: 'POST',
+                        body: formData,
+                    });
+    
+                    if (!response.ok) throw new Error("File upload for Cleaned Data CSV failed");
+                }
+
+                // Show success message
+                toast.success("Files uploaded successfully! Reloading...", { autoClose: 3000 });
+                setTimeout(() => {
+                    window.location.reload(); // Reload page after 3 seconds
+                }, 3000);
+
             } catch (error) {
                 console.error('Upload error:', error);
+                toast.error("There was an error uploading your files. Please try again.");
             }
         }
     };
@@ -106,7 +122,9 @@ export function UploadFile() {
     return (
         <>
             {/* ToastContainer for toast notifications */}
-            <ToastContainer position="top-right" />
+            <ToastContainer 
+                position="top-left"
+             />
 
             <Drawer>
                 <DrawerTrigger asChild>
