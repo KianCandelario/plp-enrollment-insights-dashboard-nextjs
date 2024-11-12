@@ -2,10 +2,6 @@
 import { NextResponse } from 'next/server'
 import { fetchResidencyData } from '@/lib/db'
 
-export const config = {
-  dynamic: 'force-dynamic',
-};
-
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -30,4 +26,4 @@ export async function GET(request: Request) {
   }
 }
 
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-static';

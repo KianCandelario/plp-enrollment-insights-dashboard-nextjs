@@ -11,6 +11,8 @@ interface CSVRecord {
   enrollee_count: string;
 }
 
+export const dynamic = 'force-static'
+
 // Helper function to parse CSV data with proper typing
 async function parseCSV(csvData: string): Promise<CSVRecord[]> {
   return new Promise((resolve, reject) => {

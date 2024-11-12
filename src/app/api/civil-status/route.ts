@@ -2,9 +2,7 @@
 import { getPool } from '@/lib/db';
 import { NextResponse } from 'next/server';
 
-export const config = {
-  dynamic: 'force-dynamic',
-};
+export const dynamic = 'force-static';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);

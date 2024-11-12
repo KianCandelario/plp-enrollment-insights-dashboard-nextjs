@@ -1,10 +1,6 @@
 import { getPool } from '@/lib/db';
 import { NextResponse } from 'next/server';
 
-export const config = {
-  dynamic: 'force-dynamic',
-};
-
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -59,3 +55,5 @@ export async function GET(request: Request) {
     );
   }
 }
+
+export const dynamic = 'force-static';
