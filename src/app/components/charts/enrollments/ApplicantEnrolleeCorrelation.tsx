@@ -1,15 +1,11 @@
-// ApplicantEnrolleeCorrelation.tsx
-"use client";
-
 import { BarChart2Icon } from "lucide-react";
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, Legend } from "recharts";
 import { useEffect, useState } from "react";
 
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -28,11 +24,11 @@ interface ApplicantEnrolleeData {
 
 const chartConfig: ChartConfig = {
   enrollees: {
-    label: "enrollees",
+    label: "Enrollees",
     color: "hsl(var(--chart-1))",
   },
   applicants: {
-    label: "applicants",
+    label: "Applicants",
     color: "hsl(var(--chart-2))",
   },
 };
@@ -89,14 +85,39 @@ export function ApplicantEnrolleeCorrelation({ course }: ApplicantEnrolleeCorrel
     );
   }
 
+  const CustomLegend = ({ payload }: any) => {
+    return (
+      <div className="flex justify-center gap-6 text-sm mt-2">
+        {payload?.map((entry: any, index: number) => (
+          <div key={`item-${index}`} className="flex items-center gap-2">
+            <div 
+              className="w-3 h-3 rounded"
+              style={{ backgroundColor: entry.color }}
+            />
+            <span className="text-muted-foreground">
+              {entry.value}
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <Card className="w-[40%]">
       <CardHeader>
         <CardTitle>Applicant-to-Enrollee Correlation</CardTitle>
-        <CardDescription>2020-2025</CardDescription>
+        <CardDescription>
+          <span className="flex items-center">
+            <BarChart2Icon className="h-4 w-4 mr-1" /> 
+            <span>
+              Applicant-to-Enrollee Fallout Over the Years
+            </span>
+          </span>
+        </CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer className="h-64 w-full" config={chartConfig}>
+        <ChartContainer className="h-72 w-full" config={chartConfig}>
           <BarChart data={chartData}>
             <CartesianGrid vertical={false} />
             <XAxis
@@ -108,25 +129,23 @@ export function ApplicantEnrolleeCorrelation({ course }: ApplicantEnrolleeCorrel
             />
             <ChartTooltip content={<ChartTooltipContent hideLabel />} />
             <Bar
+              name="Enrollees"
               dataKey="enrollee_count"
               stackId="a"
               fill="var(--color-enrollees)"
               radius={[0, 0, 4, 4]}
             />
             <Bar
+              name="Applicants"
               dataKey="applicant_count"
               stackId="a"
               fill="var(--color-applicants)"
               radius={[4, 4, 0, 0]}
             />
+            <Legend content={CustomLegend} />
           </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none items-center">
-          Applicant-to-Enrollee Fallout Over the Last 5 Years <BarChart2Icon className="h-4 w-4" />
-        </div>
-      </CardFooter>
     </Card>
   );
 }
