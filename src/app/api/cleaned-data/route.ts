@@ -4,6 +4,10 @@ import { getPool } from '@/lib/db';
 import { parse as parseCSVLib } from 'csv-parse';
 import { Readable } from 'stream';
 
+export const config = {
+  dynamic: 'force-dynamic',
+};
+
 const pool = getPool();
 
 // Define the set of Pasigueno barangays

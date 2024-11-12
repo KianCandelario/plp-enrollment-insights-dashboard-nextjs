@@ -1,6 +1,10 @@
 import { getPool } from '@/lib/db';
 import { NextResponse } from 'next/server';
 
+export const config = {
+  dynamic: 'force-dynamic',
+};
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -14,7 +18,7 @@ export async function GET(request: Request) {
     `;
 
     let result;
-    
+
     if (college && college !== 'All Colleges') {
       query += ` AND course LIKE $1`;
       query += ` GROUP BY religion ORDER BY population DESC`;

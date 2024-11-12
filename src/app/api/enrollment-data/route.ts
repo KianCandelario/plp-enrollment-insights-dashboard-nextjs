@@ -2,6 +2,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPool } from '@/lib/db';
 
+export const config = {
+  dynamic: 'force-dynamic',
+};
+
 const pool = getPool();
 
 export async function GET(_request: NextRequest) {
