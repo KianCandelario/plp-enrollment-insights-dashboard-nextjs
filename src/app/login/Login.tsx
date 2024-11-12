@@ -46,7 +46,7 @@ const Login = () => {
     };
 
     return ( 
-        <div className="flex w-[70%] h-[85%] justify-center items-center bg-[#EBEBEB] rounded-2xl drop-shadow-2xl">
+        <div className="flex w-[950px] h-[595px] justify-center items-center bg-[#EBEBEB] rounded-2xl drop-shadow-2xl">
             <div className="w-[40%] flex flex-col gap-5 justify-center items-center text-black_">
                 <Image 
                     src="/images/plp_logo.png"
@@ -101,7 +101,7 @@ const Login = () => {
 
                         {/* Button text changes to "Signing in..." and animates when loading */}
                         <input 
-                            className={`${quicksand.className} text-sm gradient-bg w-[40%] h-10 rounded text-[#EBEBEB] font-semibold cursor-pointer drop-shadow-md hover:drop-shadow-xl transition-all ${loading ? 'button-shake' : ''}`} 
+                            className={`${quicksand.className} text-sm gradient-bg w-[45%] h-10 rounded text-[#EBEBEB] font-semibold cursor-pointer drop-shadow-md hover:drop-shadow-xl transition-all ${loading ? 'button-shake' : ''}`} 
                             type="submit" 
                             value={loading ? "Signing in..." : "Log In"} 
                             disabled={loading} // Disable the button while loading

@@ -19,9 +19,7 @@ import { Age } from "../charts/demographics/Age";
 import { FamilyMonthlyIncome } from "../charts/socio-economic-background/FamilyMonthlyIncome";
 import { FeederSchools } from "../charts/socio-economic-background/FeederSchools";
 import { CivilStatusAndReligion } from "../charts/tables/CivilStatusAndReligion";
-import { Button } from "@/components/ui/button";
-import { RotateCcwIcon } from "lucide-react";
-import { COURSE_CODE_MAP } from '@/app/utilities/courseMapping';
+import ResetVisualization from "../buttons/ResetVisualization";
 
 interface DashboardProps {
   selectedCollege: string;
@@ -36,10 +34,7 @@ const Dashboard = ({ selectedCollege }: DashboardProps) => {
             <span className={`${poppins.className} text-4xl font-bold`}>
               PLP Enrollment Insights & Forecasting
             </span>
-            <Button variant="destructive" className="rounded" size="sm">
-              <RotateCcwIcon size={13} className="mr-1" />
-              Reset Visualizations
-            </Button>
+            <ResetVisualization />
           </CardTitle>
           <CardDescription>
             <span className={`${quicksand.className} `}>
@@ -65,10 +60,10 @@ const Dashboard = ({ selectedCollege }: DashboardProps) => {
             <YearlyTrend 
               courseCode={selectedCollege || 'GRAND_TOTAL'} 
             />
-            <ApplicantEnrolleeCorrelation></ApplicantEnrolleeCorrelation>
+            <ApplicantEnrolleeCorrelation course={selectedCollege} />
           </div>
           <div>
-            <AcademicProgramEnrollment></AcademicProgramEnrollment>
+            <AcademicProgramEnrollment selectedCollege={selectedCollege} />
           </div>
         </div>
 
@@ -79,13 +74,13 @@ const Dashboard = ({ selectedCollege }: DashboardProps) => {
           </div>
           <div className="flex gap-3 w-full">
             <div className="flex flex-1 w-[30%]">
-              <Residency></Residency>
+              <Residency selectedCollege={selectedCollege} />
             </div>
             <div className="flex flex-1 w-[30%]">
-              <PasigResidentStudents></PasigResidentStudents>
+              <PasigResidentStudents selectedCollege={selectedCollege} />
             </div>
             <div className="flex flex-1 w-[30%]">
-              <NonPasigResidentStudents></NonPasigResidentStudents>
+            <NonPasigResidentStudents selectedCollege={selectedCollege} />
             </div>
           </div>
           
@@ -98,11 +93,11 @@ const Dashboard = ({ selectedCollege }: DashboardProps) => {
           </div>
           <div className="flex gap-3">
             <div className="flex flex-col w-[40%] gap-3">
-              <Gender></Gender>
-              <Age></Age>
+              <Gender selectedCollege={selectedCollege} />
+               <Age selectedCollege={selectedCollege} />
             </div>
             <div className="flex flex-1 gap-3 w-[60%]">
-              <CivilStatusAndReligion></CivilStatusAndReligion>
+              <CivilStatusAndReligion selectedCollege={selectedCollege} />
             </div>
           </div>
           
@@ -115,10 +110,10 @@ const Dashboard = ({ selectedCollege }: DashboardProps) => {
           </div>
           <div className="flex gap-3">
             <div className="w-[63%]">
-              <FamilyMonthlyIncome></FamilyMonthlyIncome> 
+              <FamilyMonthlyIncome selectedCollege={selectedCollege} /> 
             </div>
             <div className="w-[37%]">
-              <FeederSchools></FeederSchools>
+              <FeederSchools selectedCollege={selectedCollege} />
             </div> 
           </div>
         </div>

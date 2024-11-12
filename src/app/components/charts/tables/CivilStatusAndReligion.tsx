@@ -1,4 +1,4 @@
-import { CivilStatus } from "@/app/components/charts/demographics/CivilStatus";
+import  CivilStatus  from "@/app/components/charts/demographics/CivilStatus";
 import { Table2Icon } from "lucide-react";
 import { Religion } from "@/app/components/charts/demographics/Religion";
 import {
@@ -16,7 +16,11 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs"
 
-export function CivilStatusAndReligion() {
+interface CivilStatusAndReligionProps {
+  selectedCollege: string;
+}
+
+export function CivilStatusAndReligion({ selectedCollege }: CivilStatusAndReligionProps) {
   return (
     <Tabs defaultValue="civil_status" className="w-full h-full">
       <TabsList className="grid w-full grid-cols-2 rounded">
@@ -33,7 +37,7 @@ export function CivilStatusAndReligion() {
           </CardHeader>
           <CardContent className="flex-1 justify-center">
 
-            <CivilStatus />
+            <CivilStatus selectedCollege={selectedCollege} />
 
           </CardContent>
         </Card>
@@ -48,7 +52,7 @@ export function CivilStatusAndReligion() {
           </CardHeader>
           <CardContent>
             
-            <Religion />
+            <Religion selectedCollege={selectedCollege} />
 
           </CardContent>
         </Card>

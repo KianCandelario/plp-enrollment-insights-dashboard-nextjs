@@ -108,8 +108,8 @@ const DashboardPageUser = () => {
           <SideBarItem 
             icon={<Brain size={17} />}
             text="ABPsych"
-            active={selectedCollege === 'ABPsych'}
-            onClick={() => handleCollegeSelection('ABPsych')}
+            active={selectedCollege === 'ABPSYCH'}
+            onClick={() => handleCollegeSelection('ABPSYCH')}
           />
         </SideBar>
       </div>

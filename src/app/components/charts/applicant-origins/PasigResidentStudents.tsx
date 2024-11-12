@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react"
 import { BarChart2 } from "lucide-react"
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
 
@@ -7,7 +8,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -18,20 +18,10 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 
-export const description = "A bar chart with a custom label"
-
-const chartData = [
-  { barangay: "Pinagbuhatan", students: 918 },
-  { barangay: "Manggahan", students: 353 },
-  { barangay: "Maybunga", students: 277 },
-  { barangay: "Rosario", students: 215 },
-  { barangay: "San Miguel", students: 212},
-  { barangay: "Kapitolyo", students: 27 },
-  { barangay: "Sta. Rosa", students: 20},
-]
-
-// Sort the chartData array in ascending order based on the number of students
-const sortedChartData = chartData.sort((a, b) => b.students - a.students);
+interface BarangayData {
+  students: number
+  barangay: string
+}
 
 const chartConfig = {
   students: {
@@ -43,64 +33,97 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export function PasigResidentStudents() {
+interface PasigResidentStudentsProps {
+  selectedCollege: string;
+}
+
+export function PasigResidentStudents({ selectedCollege }: PasigResidentStudentsProps) {
+  const [chartData, setChartData] = React.useState<BarangayData[]>([])
+  const [isLoading, setIsLoading] = React.useState(true)
+  const [error, setError] = React.useState<string | null>(null)
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`/api/pasig-barangay?college=${encodeURIComponent(selectedCollege)}`)
+        if (!response.ok) throw new Error('Failed to fetch data')
+        const data: BarangayData[] = await response.json()
+        setChartData(data)
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err.message)
+        } else {
+          setError("An unexpected error occurred")
+        }
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [selectedCollege])
+
+  if (isLoading) return <div>Loading...</div>
+  if (error) return <div>Error loading data: {error}</div>
+
+  // Calculate dynamic height based on number of items
+  const itemHeight = 30 // height per bar in pixels
+  const totalHeight = Math.max(chartData.length * itemHeight, 400) // minimum height of 400px
+
   return (
     <Card className="flex flex-col w-full">
       <CardHeader>
         <CardTitle>Pasigueño Students</CardTitle>
-        <CardDescription className="flex items-center"><BarChart2 className="mr-1 h-4 w-4" />Distribution of Pasig local students</CardDescription>
+        <CardDescription className="flex items-center">
+          <BarChart2 className="mr-1 h-4 w-4" />Distribution of Pasig local students
+        </CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 w-full">
-        <ChartContainer className="w-full" config={chartConfig}>
-          <BarChart
-            accessibilityLayer
-            data={sortedChartData} // Use the sorted data
-            layout="vertical"
-            margin={{
-              right: 16,
-            }}
-          >
-            <CartesianGrid horizontal={false} />
-            <YAxis
-              dataKey="barangay"
-              type="category"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
-              hide
-            />
-            <XAxis dataKey="students" type="number" hide />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent indicator="line" />}
-            />
-            <Bar
-              dataKey="students"
-              layout="vertical"
-              fill="var(--color-students)"
-              radius={4}
-            >
-              <LabelList
-                dataKey="barangay"
-                position="insideLeft"
-                offset={8}
-                className="fill-[--color-label]"
-                fontSize={12}
-              />
-              <LabelList
-                dataKey="students"
-                position="right"
-                offset={8}
-                className="fill-foreground"
-                fontSize={12}
-              />
-            </Bar>
-          </BarChart>
-        </ChartContainer>
+      <CardContent className="flex-1">
+        {/* Scrollable container */}
+        <div className="overflow-y-auto max-h-64">
+          <div style={{ height: `${totalHeight}px` }}>
+            <ChartContainer className="w-full h-full" config={chartConfig}>
+              <BarChart
+                accessibilityLayer
+                data={chartData}
+                layout="vertical"
+                margin={{
+                  left: -20,
+                }}
+                height={totalHeight}
+              >
+                <CartesianGrid horizontal={false} />
+                <YAxis
+                  dataKey="barangay"
+                  type="category"
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                  width={120}
+                  
+                />
+                <XAxis 
+                  dataKey="students" 
+                  type="number"
+                  hide />
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent indicator="line" />}
+                />
+                <Bar
+                  dataKey="students"
+                  layout="vertical"
+                  fill="var(--color-students)"
+                  radius={5}
+                >
+                </Bar>
+              </BarChart>
+            </ChartContainer>
+          </div>
+        </div>
       </CardContent>
-      {/* Make CardFooter take no space */}
-      <CardFooter className="hidden" />
     </Card>
   )
 }
+
+export default PasigResidentStudents;
