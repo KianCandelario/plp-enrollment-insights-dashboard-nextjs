@@ -4,7 +4,7 @@ import { getPool } from '@/lib/db';
 
 const pool = getPool();
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   const client = await pool.connect();
   
   try {

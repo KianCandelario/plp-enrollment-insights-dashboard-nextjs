@@ -4,17 +4,24 @@ import { getPool } from '@/lib/db';
 import { parse } from 'csv-parse';
 import { Readable } from 'stream';
 
-// Helper function to parse CSV data
-async function parseCSV(csvData: string): Promise<any[]> {
+interface CSVRecord {
+  academic_year: string;
+  course: string;
+  applicant_count: string;
+  enrollee_count: string;
+}
+
+// Helper function to parse CSV data with proper typing
+async function parseCSV(csvData: string): Promise<CSVRecord[]> {
   return new Promise((resolve, reject) => {
-    const records: any[] = [];
+    const records: CSVRecord[] = [];
     const parser = parse({
       columns: true,
       skip_empty_lines: true
     });
 
     parser.on('readable', function() {
-      let record;
+      let record: CSVRecord;
       while ((record = parser.read()) !== null) {
         records.push(record);
       }
@@ -169,7 +176,7 @@ export async function POST(request: NextRequest) {
 }
 
 
-export async function DELETE(request: NextRequest) {
+export async function DELETE(_request: NextRequest) {
   try {
     const pool = getPool();
     const client = await pool.connect();
