@@ -12,7 +12,7 @@ async function parseCSV(csvData: string): Promise<any[]> {
     });
 
     parser.on('readable', function() {
-      let record;
+      let record: CSVRecord;
       while ((record = parser.read()) !== null) {
         records.push(record);
       }
