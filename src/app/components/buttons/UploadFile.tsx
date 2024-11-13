@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/drawer";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { poppins } from '@/app/utilities/fonts';
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -30,12 +29,13 @@ export function UploadFile() {
         'Applicant-to-Enrollee Correlation': null,
         'Cleaned Data CSV': null,
     });
-    
+
     const [errors, setErrors] = useState<ErrorState>({});
-    
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     const handleFileChange = (category: string, event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
-        
+
         if (file) {
             if (!file.name.endsWith('.csv')) {
                 setErrors({
@@ -45,11 +45,11 @@ export function UploadFile() {
                 event.target.value = ''; // Reset input
                 return;
             }
-            
+
             const newErrors = { ...errors };
             delete newErrors[category];
             setErrors(newErrors);
-            
+
             setFiles({
                 ...files,
                 [category]: file
@@ -62,48 +62,45 @@ export function UploadFile() {
         newFiles[category] = null;
         setFiles(newFiles);
 
-        // Clear any errors for this category
         const newErrors = { ...errors };
         delete newErrors[category];
         setErrors(newErrors);
     };
-    
+
     const isAllFilesUploaded = (): boolean => {
         return Object.values(files).every(file => file !== null) && Object.keys(errors).length === 0;
     };
 
     const handleSubmit = async () => {
         if (isAllFilesUploaded()) {
+            setIsSubmitting(true); // Set submitting state to true
             try {
-                // Submit Applicant-to-Enrollee Correlation
                 const correlationFile = files['Applicant-to-Enrollee Correlation'];
                 if (correlationFile) {
                     const formData = new FormData();
                     formData.append('file', correlationFile);
-    
+
                     const response = await fetch('/api/applicant-enrollee', {
                         method: 'POST',
                         body: formData,
                     });
-    
+
                     if (!response.ok) throw new Error("File upload for Applicant-to-Enrollee failed");
                 }
 
-                // Submit Cleaned Data CSV
                 const cleanedDataFile = files['Cleaned Data CSV'];
                 if (cleanedDataFile) {
                     const formData = new FormData();
                     formData.append('file', cleanedDataFile);
-    
+
                     const response = await fetch('/api/cleaned-data', {
                         method: 'POST',
                         body: formData,
                     });
-    
+
                     if (!response.ok) throw new Error("File upload for Cleaned Data CSV failed");
                 }
 
-                // Show success message
                 toast.success("Files uploaded successfully! Reloading...", { autoClose: 3000 });
                 setTimeout(() => {
                     window.location.reload(); // Reload page after 3 seconds
@@ -112,6 +109,8 @@ export function UploadFile() {
             } catch (error) {
                 console.error('Upload error:', error);
                 toast.error("There was an error uploading your files. Please try again.");
+            } finally {
+                setIsSubmitting(false); // Reset submitting state after upload completes
             }
         }
     };
@@ -121,11 +120,6 @@ export function UploadFile() {
 
     return (
         <>
-            {/* ToastContainer for toast notifications */}
-            <ToastContainer 
-                position="top-left"
-             />
-
             <Drawer>
                 <DrawerTrigger asChild>
                     <Button size="sm" className="rounded w-full">
@@ -138,9 +132,8 @@ export function UploadFile() {
                             <DrawerTitle>Upload the CSV Files</DrawerTitle>
                             <DrawerDescription>Please provide all required documents to complete your submission. For detailed instructions, feel free to click the <b>"Quick Guide"</b> button.</DrawerDescription>
                         </DrawerHeader>
-                        
+
                         <div className="p-4">
-                            {/* First row - 2 items */}
                             <div className="grid grid-cols-2 gap-4 mb-4">
                                 {firstRow.map((viz) => (
                                     <div key={viz} className="space-y-2">
@@ -213,14 +206,14 @@ export function UploadFile() {
                                 ))}
                             </div>
                         </div>
-                        
+
                         <DrawerFooter className="w-full">
                             <Button 
                                 className="rounded"
-                                disabled={!isAllFilesUploaded()}
+                                disabled={!isAllFilesUploaded() || isSubmitting}
                                 onClick={handleSubmit}
                             >
-                                Submit
+                                {isSubmitting ? "Submitting..." : "Submit"}
                             </Button>
                             <DrawerClose asChild>
                                 <Button className="rounded" variant="outline">
