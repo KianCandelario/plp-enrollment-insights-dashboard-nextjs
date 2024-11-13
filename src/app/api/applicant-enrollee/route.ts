@@ -1,18 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase, ApplicantEnrolleeCorrelation } from '@/lib/db';
+import { supabase } from '@/lib/db';
 import { parse } from 'csv-parse';
 import { Readable } from 'stream';
 
-async function parseCSV(csvData: string): Promise<any[]> {
+async function parseCSV(csvData: string): Promise<Record<string, any>[]> {
   return new Promise((resolve, reject) => {
-    const records: any[] = [];
+    const records: Record<string, any>[] = [];
     const parser = parse({
       columns: true,
       skip_empty_lines: true
     });
 
     parser.on('readable', function() {
-      let record: CSVRecord;
+      let record: Record<string, any>;
       while ((record = parser.read()) !== null) {
         records.push(record);
       }
