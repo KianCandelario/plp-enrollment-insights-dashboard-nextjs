@@ -1,18 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/db';
+import { supabase, ApplicantEnrolleeCorrelation } from '@/lib/db';
 import { parse } from 'csv-parse';
 import { Readable } from 'stream';
 
-async function parseCSV(csvData: string): Promise<Record<string, any>[]> {
+type CSVRecord = Record<string, any>;
+
+async function parseCSV(csvData: string): Promise<CSVRecord[]> {
   return new Promise((resolve, reject) => {
-    const records: Record<string, any>[] = [];
+    const records: CSVRecord[] = [];
     const parser = parse({
       columns: true,
       skip_empty_lines: true
     });
 
     parser.on('readable', function() {
-      let record: Record<string, any>;
+      let record: CSVRecord;
       while ((record = parser.read()) !== null) {
         records.push(record);
       }
@@ -26,12 +28,13 @@ async function parseCSV(csvData: string): Promise<Record<string, any>[]> {
       resolve(records);
     });
 
-    const stream = new Readable();
-    stream.push(csvData);
-    stream.push(null);
+    // Create a Readable stream from the CSV string
+    const stream = Readable.from([csvData]);
+
     stream.pipe(parser);
   });
 }
+
 
 // api/applicant-enrollee/route.ts
 export async function GET(request: NextRequest) {
@@ -93,7 +96,6 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-
 
 
 
@@ -202,5 +204,3 @@ export async function DELETE() {
     );
   }
 }
-
-export const dynamic = 'force-static';

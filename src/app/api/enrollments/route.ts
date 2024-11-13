@@ -1,16 +1,17 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/db';
 
+// In GET API function
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     let courseCode = searchParams.get('courseCode') || 'GRAND_TOTAL';
 
+    console.log('Requested courseCode:', courseCode);
+
     if (courseCode === 'All Colleges') {
       courseCode = 'GRAND_TOTAL';
     }
-
-    console.log('Fetching data for courseCode:', courseCode);
 
     const { data, error } = await supabase
       .from('EnrollmentData')
@@ -20,11 +21,6 @@ export async function GET(request: Request) {
 
     if (error) throw error;
 
-    if (!data || data.length === 0) {
-      console.log('No data found for courseCode:', courseCode);
-      return NextResponse.json([]);
-    }
-
     console.log(`Found ${data.length} records for courseCode:`, courseCode);
     return NextResponse.json(data);
   } catch (error) {
@@ -33,5 +29,3 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
-
-export const dynamic = 'force-static';

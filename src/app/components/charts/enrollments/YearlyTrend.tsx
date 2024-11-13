@@ -62,15 +62,13 @@ export function YearlyTrend({ courseCode = 'GRAND_TOTAL' }: YearlyTrendProps) {
     const fetchData = async () => {
       try {
         setLoading(true);
-        console.log('Fetching data for courseCode:', courseCode); // Debug log
+        console.log('Selected courseCode:', courseCode); // Debug log
         
-        const response = await fetch(`/api/enrollments?courseCode=${courseCode}`);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch data: ${response.statusText}`);
-        }
+        const response = await fetch(`/api/enrollments?courseCode=${encodeURIComponent(courseCode)}`);
+        if (!response.ok) throw new Error(`Failed to fetch data: ${response.statusText}`);
         
         const data: ApiEnrollmentRecord[] = await response.json();
-        console.log('Received data:', data); // Debug log
+        console.log('Received data for courseCode:', courseCode, data); // Detailed debug log
         
         const transformedData: EnrollmentRecord[] = data.map((item) => ({
           year: item.year.toString(),
@@ -83,13 +81,13 @@ export function YearlyTrend({ courseCode = 'GRAND_TOTAL' }: YearlyTrendProps) {
         setEnrollmentData(transformedData);
         setError(null);
       } catch (err) {
-        console.error('Error fetching data:', err); // Debug log
+        console.error('Error fetching data:', err);
         setError((err as Error).message);
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchData();
   }, [courseCode]); // Add courseCode as dependency
 
