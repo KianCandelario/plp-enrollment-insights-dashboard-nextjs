@@ -1,90 +1,113 @@
 import pandas as pd
-import numpy as np
-from prophet import Prophet
-import psycopg2
-from psycopg2.extras import execute_batch
-from datetime import datetime
+import os
+from dotenv import load_dotenv
+from supabase.client import create_client, Client
 
 from .model import forecast_all_courses, load_and_prepare_data
 
-def get_db_connection():
-    """Create a database connection"""
-    return psycopg2.connect(
-        dbname="enrollment_dashboard_db",
-        user="postgres",
-        password="master-123",
-        host="localhost",
-        port="5432"
-    )
+# Load environment variables
+load_dotenv()
 
-def save_enrollment_data(conn, course_code, year, enrollment, is_actual, lower_bound=None, upper_bound=None):
-    """Save a single enrollment record to the database"""
-    cur = conn.cursor()
+def get_supabase_client() -> Client:
+    """Create a Supabase client"""
+    url = os.getenv("NEXT_PUBLIC_SUPABASE_URL")
+    key = os.getenv("NEXT_PUBLIC_SUPABASE_ANON_KEY")
     
-    query = """
-    INSERT INTO "EnrollmentData" ("courseCode", "year", "enrollment", "isActual", "lowerBound", "upperBound", "createdAt", "updatedAt")
-    VALUES (%s, %s, %s, %s, %s, %s, NOW(), NOW())
-    ON CONFLICT ("courseCode", "year") 
-    DO UPDATE SET 
-        "enrollment" = EXCLUDED."enrollment",
-        "isActual" = EXCLUDED."isActual",
-        "lowerBound" = EXCLUDED."lowerBound",
-        "upperBound" = EXCLUDED."upperBound",
-        "updatedAt" = NOW();
-    """
-    
-    cur.execute(query, (
-        course_code,
-        year,
-        enrollment,
-        is_actual,
-        lower_bound,
-        upper_bound
-    ))
-    conn.commit()
-    cur.close()
+    if not url or not key:
+        raise ValueError("Missing Supabase credentials in environment variables")
+        
+    return create_client(url, key)
 
-def save_forecast_to_db(forecasts, actual_data):
-    """Save all forecasts and historical data to the database"""
-    conn = get_db_connection()
+def save_enrollment_data(supabase: Client, course_code: str, year: int, enrollment: float, 
+                        is_actual: bool, lower_bound: float = None, upper_bound: float = None):
+    """Save a single enrollment record to Supabase"""
+    try:
+        data = {
+            "courseCode": course_code,
+            "year": year,
+            "enrollment": float(enrollment),  # Convert numpy float to Python float
+            "isActual": is_actual,
+            "lowerBound": float(lower_bound) if lower_bound is not None else None,
+            "upperBound": float(upper_bound) if upper_bound is not None else None
+        }
+        
+        # First try to update existing record
+        result = supabase.table('EnrollmentData')\
+            .update(data)\
+            .eq('courseCode', course_code)\
+            .eq('year', year)\
+            .execute()
+            
+        # If no rows were updated (record doesn't exist), insert new record
+        if not result.data:
+            result = supabase.table('EnrollmentData')\
+                .insert(data)\
+                .execute()
+        
+        if hasattr(result, 'error') and result.error:
+            raise Exception(f"Error saving data: {result.error}")
+            
+        return result.data
+        
+    except Exception as e:
+        print(f"Error saving enrollment data for course {course_code}, year {year}: {str(e)}")
+        raise
+
+def save_forecast_to_db(forecasts: dict, actual_data: pd.DataFrame):
+    """Save all forecasts and historical data to Supabase"""
+    supabase = get_supabase_client()
     
     try:
-        # Save historical data
+        # Save historical data with error handling for each record
         for _, row in actual_data.iterrows():
-            save_enrollment_data(
-                conn=conn,
-                course_code=row['Course Code'],
-                year=row['Original_Year'],
-                enrollment=row['Enrollment'],
-                is_actual=True
-            )
+            try:
+                save_enrollment_data(
+                    supabase=supabase,
+                    course_code=row['Course Code'],
+                    year=row['Original_Year'],
+                    enrollment=row['Enrollment'],
+                    is_actual=True
+                )
+            except Exception as e:
+                print(f"Failed to save historical data for {row['Course Code']}: {str(e)}")
+                continue
         
-        # Save forecast data
+        # Save forecast data with error handling for each record
         for course, forecast in forecasts.items():
             future_data = forecast[forecast['year'] > actual_data['Original_Year'].max()]
             
             for _, row in future_data.iterrows():
-                save_enrollment_data(
-                    conn=conn,
-                    course_code=course,
-                    year=int(row['year']),
-                    enrollment=row['yhat'],
-                    is_actual=False,
-                    lower_bound=row['yhat_lower'],
-                    upper_bound=row['yhat_upper']
-                )
+                try:
+                    save_enrollment_data(
+                        supabase=supabase,
+                        course_code=course,
+                        year=int(row['year']),
+                        enrollment=row['yhat'],
+                        is_actual=False,
+                        lower_bound=row['yhat_lower'],
+                        upper_bound=row['yhat_upper']
+                    )
+                except Exception as e:
+                    print(f"Failed to save forecast data for {course}: {str(e)}")
+                    continue
                 
-    finally:
-        conn.close()
+    except Exception as e:
+        print(f"Error in save_forecast_to_db: {str(e)}")
+        raise
 
 def main():
-    # Your existing code...
-    excel_path = r'C:\Users\acer\Desktop\plp-enrollment-insights-dashboardd\src\lib\ml\data\EnrollmentData.csv'
-    df = load_and_prepare_data(excel_path)
-    forecasts = forecast_all_courses(df)
-    
-    # Save the data to database
-    save_forecast_to_db(forecasts, df)
+    try:
+        excel_path = r'C:\Users\acer\Desktop\plp-enrollment-insights-dashboardd\src\lib\ml\data\EnrollmentData.csv'
+        df = load_and_prepare_data(excel_path)
+        forecasts = forecast_all_courses(df)
+        
+        # Save the data to Supabase
+        save_forecast_to_db(forecasts, df)
+        print("Successfully saved forecasts to Supabase")
+        
+    except Exception as e:
+        print(f"Error in main function: {str(e)}")
+        raise
 
 if __name__ == "__main__":
     main()
