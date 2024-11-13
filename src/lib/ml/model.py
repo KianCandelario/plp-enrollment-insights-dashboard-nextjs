@@ -224,7 +224,7 @@ def create_forecast_summary(forecasts):
 
 
 def main():
-    excel_path = r'C:\Users\acer\Desktop\plp-enrollment-insights-dashboardd\model\data\EnrollmentData.csv'
+    excel_path = r'C:\Users\acer\Desktop\plp-enrollment-insights-dashboardd\src\lib\ml\data\EnrollmentData.csv'
     df = load_and_prepare_data(excel_path)
     forecasts = forecast_all_courses(df)
 

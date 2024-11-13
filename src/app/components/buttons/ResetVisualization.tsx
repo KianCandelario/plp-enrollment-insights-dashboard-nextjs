@@ -75,17 +75,6 @@ const ResetVisualization = () => {
 
   return (
     <>
-      <ToastContainer 
-        position="top-left"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <div>

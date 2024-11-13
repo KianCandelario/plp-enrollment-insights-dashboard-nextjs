@@ -18,6 +18,8 @@ import {
   CogIcon
 } from 'lucide-react';
 import { useState } from "react";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const DashboardPageUser = () => {
   const [selectedCollege, setSelectedCollege] = useState('All Colleges');
@@ -28,6 +30,7 @@ const DashboardPageUser = () => {
 
   return (
     <main className="min-h-screen h-screen flex">
+      <ToastContainer position="top-left" autoClose={3000} />
       {/* Sidebar with fixed position */}
       <div className="w-72 h-screen relative">
         <SideBar className="sticky top-0 h-screen">
