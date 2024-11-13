@@ -31,3 +31,5 @@ export async function GET(_request: NextRequest) {
     );
   }
 }
+
+export const dynamic = 'force-static';
