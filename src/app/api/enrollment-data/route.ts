@@ -1,28 +1,33 @@
-// src/app/api/enrollment-data/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { getPool } from '@/lib/db';
+import { supabase } from '@/lib/db';
 
-const pool = getPool();
-
-export async function GET(request: NextRequest) {
-  const client = await pool.connect();
-  
+export async function GET(_request: NextRequest) {
   try {
-    // Get all enrollment data regardless of selected college
-    const query = `SELECT "studentID", "course" FROM "EnrollmentDashboard"`;
-    const result = await client.query(query);
-    
-    return NextResponse.json(result.rows);
+    const batchSize = 1000;
+    let allData: any[] = [];
+    let start = 0;
+    let end = batchSize - 1;
 
+    while (true) {
+      const { data, error } = await supabase
+        .from('EnrollmentDashboard')
+        .select('studentID, course')
+        .range(start, end);
+
+      if (error) throw error;
+      if (!data || data.length === 0) break;
+
+      allData = allData.concat(data);
+      start += batchSize;
+      end += batchSize;
+    }
+
+    return NextResponse.json(allData);
   } catch (error) {
-    console.error('Database Error:', error);
+    console.error('Unexpected Error:', error);
     return NextResponse.json(
-      { 
-        error: error instanceof Error ? error.message : 'Failed to fetch enrollment data',
-      },
+      { error: 'An unexpected error occurred' },
       { status: 500 }
     );
-  } finally {
-    client.release();
   }
 }

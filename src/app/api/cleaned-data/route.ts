@@ -1,12 +1,8 @@
-// src/app/api/cleaned-data/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { getPool } from '@/lib/db';
+import { supabase } from '@/lib/db';
 import { parse as parseCSVLib } from 'csv-parse';
 import { Readable } from 'stream';
 
-const pool = getPool();
-
-// Define the set of Pasigueno barangays
 const pasiguenoBarangays = new Set([
   'Bagong Ilog', 'Bagong Katipunan', 'Bambang', 'Buting', 'Caniogan', 'Dela Paz', 
   'Kalawaan', 'Kapasigan', 'Kapitolyo', 'Malinao', 'Manggahan', 'Maybunga', 
@@ -15,15 +11,14 @@ const pasiguenoBarangays = new Set([
   'Santo Tomas', 'Santolan', 'Sumilang', 'Ugong', 'San Nicolas', 'Pinagbuhatan'
 ]);
 
-// Helper function to parse CSV data with error handling
 async function parseCSV(csvData: string): Promise<any[]> {
   return new Promise((resolve, reject) => {
     const records: any[] = [];
     const parser = parseCSVLib({
       columns: true,
       skip_empty_lines: true,
-      trim: true, // Add trim to handle whitespace
-      skipRecordsWithError: true, // Skip records with parsing errors
+      trim: true,
+      skipRecordsWithError: true,
     });
 
     parser.on('readable', () => {
@@ -40,7 +35,6 @@ async function parseCSV(csvData: string): Promise<any[]> {
 
     parser.on('end', () => resolve(records));
 
-    // Use try-catch for stream handling
     try {
       const stream = new Readable();
       stream.push(csvData);
@@ -52,12 +46,9 @@ async function parseCSV(csvData: string): Promise<any[]> {
   });
 }
 
-// POST: Upload cleaned data CSV and insert into database
+// /api/cleaned-csv/route.ts
 export async function POST(request: NextRequest) {
-  const client = await pool.connect();
-  
   try {
-    // Explicitly set the expected content type
     if (!request.headers.get('content-type')?.includes('multipart/form-data')) {
       return NextResponse.json(
         { error: 'Content type must be multipart/form-data' },
@@ -75,8 +66,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify file size (example: 10MB limit)
-    const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+    const maxSize = 10 * 1024 * 1024;
     if (file.size > maxSize) {
       return NextResponse.json(
         { error: 'File size exceeds maximum limit of 10MB' },
@@ -84,7 +74,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify file type
     if (!file.type.includes('csv') && !file.name.endsWith('.csv')) {
       return NextResponse.json(
         { error: 'Only CSV files are allowed' },
@@ -108,74 +97,35 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    await client.query('BEGIN');
+    const formattedRecords = records.map(record => ({
+      studentID: record.studentID,
+      gender: record.gender,
+      age: parseInt(record.age) || 0,
+      civilStatus: record.civilStatus,
+      religion: record.religion,
+      course: record.course,
+      barangay: record.barangay,
+      isPasigueno: pasiguenoBarangays.has(record.barangay),
+      familyMonthlyIncome: parseFloat(record.familyMonthlyIncome) || 0,
+      feederSchoolType: record.feederSchoolType,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }));
 
-    let totalRecords = 0;
-    const batchSize = 1000; // Process records in batches
-    const recordBatches = [];
-
-    // Split records into batches
-    for (let i = 0; i < records.length; i += batchSize) {
-      recordBatches.push(records.slice(i, i + batchSize));
-    }
-
-    // Process each batch
-    for (const batch of recordBatches) {
-      const values = batch.map((record) => {
-        const isPasigueno = pasiguenoBarangays.has(record.barangay);
-        return [
-          record.studentID,
-          record.gender,
-          parseInt(record.age) || 0,
-          record.civilStatus,
-          record.religion,
-          record.course,
-          record.barangay,
-          isPasigueno,
-          parseFloat(record.familyMonthlyIncome) || 0,
-          record.feederSchoolType,
-          new Date().toISOString(),
-          new Date().toISOString(),
-        ];
+    const { error } = await supabase
+      .from('EnrollmentDashboard')
+      .upsert(formattedRecords, {
+        onConflict: 'studentID'
       });
 
-      // Use prepared statement for better performance
-      const query = `
-        INSERT INTO "EnrollmentDashboard" 
-        ("studentID", "gender", "age", "civilStatus", "religion", "course", 
-         "barangay", "isPasigueno", "familyMonthlyIncome", "feederSchoolType", 
-         "createdAt", "updatedAt")
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-        ON CONFLICT ("studentID") DO UPDATE SET
-          "gender" = EXCLUDED."gender",
-          "age" = EXCLUDED."age",
-          "civilStatus" = EXCLUDED."civilStatus",
-          "religion" = EXCLUDED."religion",
-          "course" = EXCLUDED."course",
-          "barangay" = EXCLUDED."barangay",
-          "isPasigueno" = EXCLUDED."isPasigueno",
-          "familyMonthlyIncome" = EXCLUDED."familyMonthlyIncome",
-          "feederSchoolType" = EXCLUDED."feederSchoolType",
-          "updatedAt" = EXCLUDED."updatedAt"
-      `;
+    if (error) throw error;
 
-      for (const value of values) {
-        await client.query(query, value);
-        totalRecords++;
-      }
-    }
-
-    await client.query('COMMIT');
-    
     return NextResponse.json({
       message: 'Data uploaded successfully',
-      recordCount: totalRecords,
+      recordCount: formattedRecords.length
     });
-
   } catch (error) {
-    await client.query('ROLLBACK');
     console.error('Upload Error:', error);
-    
     return NextResponse.json(
       { 
         error: error instanceof Error ? error.message : 'Failed to process upload',
@@ -183,37 +133,23 @@ export async function POST(request: NextRequest) {
       },
       { status: 500 }
     );
-
-  } finally {
-    client.release();
   }
 }
 
-export async function DELETE(request: NextRequest) {
+export async function DELETE(_request: NextRequest) {
   try {
-    const pool = getPool();
-    const client = await pool.connect();
+    const { error } = await supabase
+      .from('EnrollmentDashboard')
+      .delete()
+      .neq('studentID', ''); // Delete all records
 
-    try {
-      await client.query('BEGIN');
-      await client.query(`DELETE FROM "EnrollmentDashboard"`);
-      await client.query('COMMIT');
+    if (error) throw error;
 
-      return NextResponse.json({ message: 'All data cleared successfully' });
-    } catch (error) {
-      await client.query('ROLLBACK');
-      console.error('Clear Data Error:', error);
-      return NextResponse.json(
-        { error: 'Failed to clear data' },
-        { status: 500 }
-      );
-    } finally {
-      client.release();
-    }
+    return NextResponse.json({ message: 'All data cleared successfully' });
   } catch (error) {
-    console.error('Connection Error:', error);
+    console.error('Clear Data Error:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to connect to database' },
+      { error: error instanceof Error ? error.message : 'Failed to clear data' },
       { status: 500 }
     );
   }

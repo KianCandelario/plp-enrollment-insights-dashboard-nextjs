@@ -1,4 +1,4 @@
-import { getPool } from '@/lib/db';
+import { supabase } from '@/lib/db';
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
@@ -6,47 +6,40 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const college = searchParams.get('college');
 
-    const pool = getPool();
-    
-    let query = `
-      SELECT 
-        course,
-        gender,
-        COUNT(*) as count
-      FROM "EnrollmentDashboard"
-      WHERE 1=1
-    `;
-    
-    const values: any[] = [];
-    
+    const batchSize = 1000;
+    let allData: any[] = [];
+    let start = 0;
+    let end = batchSize - 1;
+
+    let query = supabase
+      .from('EnrollmentDashboard')
+      .select('gender, course');
+
     if (college && college !== 'All Colleges') {
-      query += ` AND course = $1`;
-      values.push(college);
+      query = query.eq('course', college);
     }
-    
-    query += `
-      GROUP BY course, gender
-      ORDER BY course, gender
-    `;
 
-    const result = await pool.query(query, values);
+    while (true) {
+      const { data, error } = await query.range(start, end);
+      if (error) throw error;
+      if (!data || data.length === 0) break;
 
-    // Transform the data into the required format
-    const genderData = {
-      female: 0,
-      male: 0
-    };
+      allData = allData.concat(data);
+      start += batchSize;
+      end += batchSize;
+    }
 
-    result.rows.forEach((row) => {
-      if (row.gender.toLowerCase() === 'female') {
-        genderData.female += Number(row.count);
-      } else if (row.gender.toLowerCase() === 'male') {
-        genderData.male += Number(row.count);
+    const genderData = { female: 0, male: 0 };
+    allData.forEach((row) => {
+      const gender = row.gender?.toLowerCase();
+      if (gender === 'female') {
+        genderData.female += 1;
+      } else if (gender === 'male') {
+        genderData.male += 1;
       }
     });
 
     return NextResponse.json([genderData]);
-
   } catch (error) {
     console.error('Error fetching gender data:', error);
     return NextResponse.json(

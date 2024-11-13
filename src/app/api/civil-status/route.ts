@@ -1,36 +1,51 @@
-// app/api/civil-status/route.ts
-import { getPool } from '@/lib/db';
 import { NextResponse } from 'next/server';
+import { supabase } from '@/lib/db';
+
+interface CivilStatusCount {
+  civil_status: string;
+  population: number;
+}
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const college = searchParams.get('college');
-  
-  const pool = getPool();
 
   try {
-    let query = `
-      SELECT 
-        "civilStatus" as civil_status,
-        COUNT(*) as population
-      FROM "EnrollmentDashboard"
-      WHERE 1=1
-    `;
+    const batchSize = 1000;
+    let allData: any[] = [];
+    let start = 0;
+    let end = batchSize - 1;
 
-    const values = [];
+    let query = supabase
+      .from('EnrollmentDashboard')
+      .select('civilStatus')
+      .filter('civilStatus', 'not.eq', null);
 
     if (college && college !== 'All Colleges') {
-      query += ` AND course LIKE $1`;
-      values.push(`${college}%`);
+      query = query.ilike('course', `${college}%`);
     }
 
-    query += `
-      GROUP BY "civilStatus"
-      ORDER BY "civilStatus"
-    `;
+    while (true) {
+      const { data, error } = await query.range(start, end);
+      if (error) throw error;
+      if (!data || data.length === 0) break;
 
-    const result = await pool.query(query, values);
-    return NextResponse.json(result.rows);
+      allData = allData.concat(data);
+      start += batchSize;
+      end += batchSize;
+    }
+
+    const formattedData = allData.reduce((acc: CivilStatusCount[], row: { civilStatus: string }) => {
+      const existingStatus = acc.find((item) => item.civil_status === row.civilStatus);
+      if (existingStatus) {
+        existingStatus.population += 1;
+      } else {
+        acc.push({ civil_status: row.civilStatus, population: 1 });
+      }
+      return acc;
+    }, []);
+
+    return NextResponse.json(formattedData);
   } catch (error) {
     console.error('Error fetching civil status data:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
