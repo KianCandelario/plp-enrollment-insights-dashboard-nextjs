@@ -20,6 +20,14 @@ import { FamilyMonthlyIncome } from "../charts/socio-economic-background/FamilyM
 import { FeederSchools } from "../charts/socio-economic-background/FeederSchools";
 import { CivilStatusAndReligion } from "../charts/tables/CivilStatusAndReligion";
 import ResetVisualization from "../buttons/ResetVisualization";
+import { StrandInSHS } from "../charts/enrollments/StrandInSHS";
+import { AcademicStatus } from "../charts/enrollments/AcademicStatus";
+import { WorkingStudent } from "../charts/enrollments/WorkingStudent";
+import { YearsOfResidency } from "../charts/applicant-origins/YearsOfResidency";
+import { IsLGBTQIA } from "../charts/demographics/IsLGBTQIA";
+import { IsPWD } from "../charts/demographics/IsPWD";
+import { DeansLister } from "../charts/academic-achievements/DeansLister";
+import { PresidentsLister } from "../charts/academic-achievements/PresidentsLister";
 
 interface DashboardProps {
   selectedCollege: string;
@@ -65,13 +73,24 @@ const Dashboard = ({ selectedCollege }: DashboardProps) => {
           <div>
             <AcademicProgramEnrollment selectedCollege={selectedCollege} />
           </div>
+          <div className="flex">
+            <div className="flex-1">
+              <StrandInSHS selectedCollege={selectedCollege} />
+            </div>
+            <div className="flex flex-col">
+              <AcademicStatus selectedCollege={selectedCollege} />
+              <WorkingStudent selectedCollege={selectedCollege} />
+            </div>
+          </div>
         </div>
 
         {/* Applicant Origins */}
         <div className="w-full flex flex-col gap-3">
+
           <div>
            <h1 className={`${poppins.className} text-2xl font-bold ml-3`}>Applicant Origins</h1>
           </div>
+
           <div className="flex gap-3 w-full">
             <div className="flex flex-1 w-[30%]">
               <Residency selectedCollege={selectedCollege} />
@@ -83,14 +102,20 @@ const Dashboard = ({ selectedCollege }: DashboardProps) => {
             <NonPasigResidentStudents selectedCollege={selectedCollege} />
             </div>
           </div>
+
+          <div>
+            <YearsOfResidency selectedCollege={selectedCollege} />
+          </div>
           
         </div>
 
         {/* Demographics */}
         <div className="flex flex-col gap-3">
+
           <div>
            <h1 className={`${poppins.className} text-2xl font-bold ml-3`}>Demographics Summary</h1>
           </div>
+
           <div className="flex gap-3">
             <div className="flex flex-col w-[40%] gap-3">
               <Gender selectedCollege={selectedCollege} />
@@ -100,7 +125,27 @@ const Dashboard = ({ selectedCollege }: DashboardProps) => {
               <CivilStatusAndReligion selectedCollege={selectedCollege} />
             </div>
           </div>
+
+          <div className="flex">
+            <IsLGBTQIA selectedCollege={selectedCollege} />
+            <IsPWD selectedCollege={selectedCollege} />
+          </div>
           
+        </div>
+
+        {/* Academic Achievements */}
+        <div className="flex-col">
+          <div>
+            <h1 className={`${poppins.className} text-2xl font-bold ml-3`}>Academic Achievements</h1>
+          </div>
+          <div className="flex">
+            <div>
+              <DeansLister selectedCollege={selectedCollege} />
+            </div>
+            <div>
+              <PresidentsLister selectedCollege={selectedCollege} />
+            </div>
+          </div>
         </div>
 
         {/* Socio-Economic Background */}
