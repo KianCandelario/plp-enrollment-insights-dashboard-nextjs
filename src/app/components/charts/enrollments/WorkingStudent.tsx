@@ -1,7 +1,5 @@
-"use client"
-
-import { TrendingUp } from "lucide-react"
-import { Pie, PieChart } from "recharts"
+import { useEffect, useState } from "react";
+import { Pie, PieChart, Legend } from "recharts";
 
 import {
   Card,
@@ -10,57 +8,92 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart"
-const chartData = [
-  { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-  { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-  { browser: "firefox", visitors: 187, fill: "var(--color-firefox)" },
-  { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
-  { browser: "other", visitors: 90, fill: "var(--color-other)" },
-]
+} from "@/components/ui/chart";
+
+interface ChartDataItem {
+  status: string;
+  count: number;
+  fill: string;
+}
 
 const chartConfig = {
-  visitors: {
-    label: "Visitors",
+  count: {
+    label: "Students",
   },
-  chrome: {
-    label: "Chrome",
+  Yes: {
+    label: "Working Students",
     color: "hsl(var(--chart-1))",
   },
-  safari: {
-    label: "Safari",
+  No: {
+    label: "Non-Working Students",
     color: "hsl(var(--chart-2))",
   },
-  firefox: {
-    label: "Firefox",
-    color: "hsl(var(--chart-3))",
-  },
-  edge: {
-    label: "Edge",
-    color: "hsl(var(--chart-4))",
-  },
-  other: {
-    label: "Other",
-    color: "hsl(var(--chart-5))",
-  },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
 interface WorkingStudentProps {
   selectedCollege: string;
 }
 
-export function WorkingStudent({selectedCollege}: WorkingStudentProps) {
+// Custom tooltip content component
+const CustomTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    const status = data.status === 'Yes' ? 'Working' : 'Non-Working';
+    const count = data.count;
+    return (
+      <div className="bg-background/95 p-2 rounded-md border shadow-sm">
+        <p className="text-sm font-medium">{status}</p>
+        <p className="text-sm text-muted-foreground">{count} students</p>
+      </div>
+    );
+  }
+  return null;
+};
+
+export function WorkingStudent({ selectedCollege }: WorkingStudentProps) {
+  const [data, setData] = useState<ChartDataItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(
+          `/api/working-student?college=${encodeURIComponent(selectedCollege)}`
+        );
+        if (!response.ok) throw new Error('Failed to fetch data');
+        const chartData = await response.json();
+        setData(chartData);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [selectedCollege]);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+
+  const total = data.reduce((sum, item) => sum + item.count, 0);
+
   return (
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Pie Chart - Custom Label</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>Working Student Distribution</CardTitle>
+        <CardDescription>
+          {selectedCollege === 'All Colleges' 
+            ? 'All Colleges' 
+            : `College of ${selectedCollege}`}
+        </CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
@@ -68,14 +101,15 @@ export function WorkingStudent({selectedCollege}: WorkingStudentProps) {
           className="mx-auto aspect-square max-h-[250px] px-0"
         >
           <PieChart>
-            <ChartTooltip
-              content={<ChartTooltipContent nameKey="visitors" hideLabel />}
-            />
+            <ChartTooltip content={<CustomTooltip />} />
             <Pie
-              data={chartData}
-              dataKey="visitors"
+              data={data}
+              dataKey="count"
+              nameKey="status"
               labelLine={false}
-              label={({ payload, ...props }) => {
+              label={({ payload, ...props }: any) => {
+                if (!payload || !payload.count) return null;
+                const percentage = ((payload.count / total) * 100).toFixed(1);
                 return (
                   <text
                     cx={props.cx}
@@ -85,24 +119,26 @@ export function WorkingStudent({selectedCollege}: WorkingStudentProps) {
                     textAnchor={props.textAnchor}
                     dominantBaseline={props.dominantBaseline}
                     fill="hsla(var(--foreground))"
+                    fontSize="12"
                   >
-                    {payload.visitors}
+                    {`${percentage}%`}
                   </text>
-                )
+                );
               }}
-              nameKey="browser"
+            />
+            <Legend 
+              formatter={(value) => (value === 'Yes' ? 'Working' : 'Non-Working')}
             />
           </PieChart>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
-        <div className="flex items-center gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
         <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
+          Total Students: {total}
         </div>
       </CardFooter>
     </Card>
-  )
+  );
 }
+
+export default WorkingStudent;

@@ -1,67 +1,33 @@
-"use client"
-
-import * as React from "react"
-import { Label, Pie, PieChart, Sector } from "recharts"
-import { PieSectorDataItem } from "recharts/types/polar/Pie"
+import { useEffect, useState } from "react"
+import { TrendingUp, Loader2 } from "lucide-react"
+import { Pie, PieChart, Legend } from "recharts"
 
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
 import {
   ChartConfig,
   ChartContainer,
-  ChartStyle,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-const desktopData = [
-  { month: "january", desktop: 186, fill: "var(--color-january)" },
-  { month: "february", desktop: 305, fill: "var(--color-february)" },
-  { month: "march", desktop: 237, fill: "var(--color-march)" },
-  { month: "april", desktop: 173, fill: "var(--color-april)" },
-  { month: "may", desktop: 209, fill: "var(--color-may)" },
-]
 
 const chartConfig = {
-  visitors: {
-    label: "Visitors",
+  count: {
+    label: "Students",
   },
-  desktop: {
-    label: "Desktop",
-  },
-  mobile: {
-    label: "Mobile",
-  },
-  january: {
-    label: "January",
+  Yes: {
+    label: "PWD",
     color: "hsl(var(--chart-1))",
   },
-  february: {
-    label: "February",
+  No: {
+    label: "Non-PWD",
     color: "hsl(var(--chart-2))",
-  },
-  march: {
-    label: "March",
-    color: "hsl(var(--chart-3))",
-  },
-  april: {
-    label: "April",
-    color: "hsl(var(--chart-4))",
-  },
-  may: {
-    label: "May",
-    color: "hsl(var(--chart-5))",
   },
 } satisfies ChartConfig
 
@@ -69,125 +35,114 @@ interface IsPWDProps {
   selectedCollege: string;
 }
 
-export function IsPWD({selectedCollege}: IsPWDProps) {
-  const id = "pie-interactive"
-  const [activeMonth, setActiveMonth] = React.useState(desktopData[0].month)
+const CustomTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    const status = payload[0].payload.status;
+    const count = payload[0].value;
+    const label = status === "Yes" ? "PWD" : "Non-PWD";
+    return (
+      <div className="rounded-lg border bg-background p-2 shadow-sm">
+        <div className="font-medium">{label}</div>
+        <div className="text-sm text-muted-foreground">{count.toLocaleString()}</div>
+      </div>
+    );
+  }
+  return null;
+};
 
-  const activeIndex = React.useMemo(
-    () => desktopData.findIndex((item) => item.month === activeMonth),
-    [activeMonth]
-  )
-  const months = React.useMemo(() => desktopData.map((item) => item.month), [])
+export function IsPWD({ selectedCollege }: IsPWDProps) {
+  const [pwdData, setPwdData] = useState<Array<{ status: string; count: number; fill: string }>>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [total, setTotal] = useState(0);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`/api/is-pwd?college=${encodeURIComponent(selectedCollege)}`);
+        if (!response.ok) throw new Error('Failed to fetch data');
+        const data = await response.json();
+        setPwdData(data);
+        setTotal(data.reduce((acc: number, curr: { count: number }) => acc + curr.count, 0));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [selectedCollege]);
+
+  if (error) {
+    return (
+      <Card className="flex flex-col">
+        <CardHeader>
+          <CardTitle className="text-red-500">Error Loading Data</CardTitle>
+        </CardHeader>
+        <CardContent>{error}</CardContent>
+      </Card>
+    );
+  }
 
   return (
-    <Card data-chart={id} className="flex flex-col">
-      <ChartStyle id={id} config={chartConfig} />
-      <CardHeader className="flex-row items-start space-y-0 pb-0">
-        <div className="grid gap-1">
-          <CardTitle>Pie Chart - Interactive</CardTitle>
-          <CardDescription>January - June 2024</CardDescription>
-        </div>
-        <Select value={activeMonth} onValueChange={setActiveMonth}>
-          <SelectTrigger
-            className="ml-auto h-7 w-[130px] rounded-lg pl-2.5"
-            aria-label="Select a value"
-          >
-            <SelectValue placeholder="Select month" />
-          </SelectTrigger>
-          <SelectContent align="end" className="rounded-xl">
-            {months.map((key) => {
-              const config = chartConfig[key as keyof typeof chartConfig]
-
-              if (!config) {
-                return null
-              }
-
-              return (
-                <SelectItem
-                  key={key}
-                  value={key}
-                  className="rounded-lg [&_span]:flex"
-                >
-                  <div className="flex items-center gap-2 text-xs">
-                    <span
-                      className="flex h-3 w-3 shrink-0 rounded-sm"
-                      style={{
-                        backgroundColor: `var(--color-${key})`,
-                      }}
-                    />
-                    {config?.label}
-                  </div>
-                </SelectItem>
-              )
-            })}
-          </SelectContent>
-        </Select>
+    <Card className="flex flex-col">
+      <CardHeader className="items-center pb-0">
+        <CardTitle>PWD Distribution</CardTitle>
+        <CardDescription>
+          {selectedCollege === "All Colleges" ? "All Colleges" : selectedCollege}
+        </CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-1 justify-center pb-0">
-        <ChartContainer
-          id={id}
-          config={chartConfig}
-          className="mx-auto aspect-square w-full max-w-[300px]"
-        >
-          <PieChart>
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
-            <Pie
-              data={desktopData}
-              dataKey="desktop"
-              nameKey="month"
-              innerRadius={60}
-              strokeWidth={5}
-              activeIndex={activeIndex}
-              activeShape={({
-                outerRadius = 0,
-                ...props
-              }: PieSectorDataItem) => (
-                <g>
-                  <Sector {...props} outerRadius={outerRadius + 10} />
-                  <Sector
+      <CardContent className="flex-1 pb-0">
+        {loading ? (
+          <div className="flex h-[250px] items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin" />
+          </div>
+        ) : (
+          <ChartContainer
+            config={chartConfig}
+            className="mx-auto aspect-square max-h-[250px] px-0"
+          >
+            <PieChart>
+              <ChartTooltip content={<CustomTooltip />} />
+              <Pie
+                data={pwdData}
+                dataKey="count"
+                nameKey="status"
+                labelLine={false}
+                label={({ payload, ...props }) => (
+                  <text
                     {...props}
-                    outerRadius={outerRadius + 25}
-                    innerRadius={outerRadius + 12}
-                  />
-                </g>
-              )}
-            >
-              <Label
-                content={({ viewBox }) => {
-                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                    return (
-                      <text
-                        x={viewBox.cx}
-                        y={viewBox.cy}
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                      >
-                        <tspan
-                          x={viewBox.cx}
-                          y={viewBox.cy}
-                          className="fill-foreground text-3xl font-bold"
-                        >
-                          {desktopData[activeIndex].desktop.toLocaleString()}
-                        </tspan>
-                        <tspan
-                          x={viewBox.cx}
-                          y={(viewBox.cy || 0) + 24}
-                          className="fill-muted-foreground"
-                        >
-                          Visitors
-                        </tspan>
-                      </text>
-                    )
-                  }
+                    fill="hsla(var(--foreground))"
+                    textAnchor={props.textAnchor}
+                    dominantBaseline={props.dominantBaseline}
+                  >
+                    {payload.count}
+                  </text>
+                )}
+              />
+              <Legend
+                verticalAlign="bottom"
+                height={36}
+                formatter={(value) => {
+                  return value === "Yes" ? "PWD" : "Non-PWD";
                 }}
               />
-            </Pie>
-          </PieChart>
-        </ChartContainer>
+            </PieChart>
+          </ChartContainer>
+        )}
       </CardContent>
+      <CardFooter className="flex-col gap-2 text-sm">
+        <div className="flex items-center gap-2 font-medium leading-none">
+          Total Students: {total.toLocaleString()}
+        </div>
+        <div className="leading-none text-muted-foreground">
+          Distribution of PWD and Non-PWD Students
+        </div>
+      </CardFooter>
     </Card>
   )
 }
+
+export default IsPWD;

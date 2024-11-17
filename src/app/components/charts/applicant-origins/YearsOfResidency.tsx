@@ -1,7 +1,8 @@
 "use client"
 
-import { TrendingUp } from "lucide-react"
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts"
+import { useEffect, useState } from "react"
+import { TrendingUp, TrendingDown } from "lucide-react"
+import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
 
 import {
   Card,
@@ -17,56 +18,91 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-const chartData = [
-  { month: "January", desktop: 186 },
-  { month: "February", desktop: 305 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 73 },
-  { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 },
-]
+
+interface YearsData {
+  category: string
+  count: number
+}
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  count: {
+    label: "Count",
     color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig
 
 interface YearsOfResidencyProps {
-  selectedCollege: string;
+  selectedCollege: string
 }
 
-export function YearsOfResidency({selectedCollege}: YearsOfResidencyProps) {
+export function YearsOfResidency({ selectedCollege }: YearsOfResidencyProps) {
+  const [data, setData] = useState<YearsData[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true)
+      try {
+        const response = await fetch(
+          `/api/years-of-residency?college=${encodeURIComponent(selectedCollege)}`
+        )
+        const yearsData = await response.json()
+        setData(yearsData)
+      } catch (error) {
+        console.error("Error fetching years in Pasig data:", error)
+      }
+      setIsLoading(false)
+    }
+
+    fetchData()
+  }, [selectedCollege])
+
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Bar Chart - Label</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>Years of Residency in Pasig</CardTitle>
+        <CardDescription>
+          Distribution for {selectedCollege || "All Colleges"}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
           <BarChart
             accessibilityLayer
-            data={chartData}
+            data={data}
             margin={{
               top: 20,
+              right: 20,
+              left: 20,
+              bottom: 20,
             }}
           >
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="month"
+              dataKey="category"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
+              angle={-45}
+              textAnchor="end"
+              height={80}
+            />
+            <YAxis
+              axisLine={false}
+              tickLine={false}
+              tickMargin={10}
             />
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent hideLabel />}
+              content={<ChartTooltipContent />}
             />
-            <Bar dataKey="desktop" fill="var(--color-desktop)" radius={8}>
+            <Bar dataKey="count" fill="var(--color-count)" radius={[8, 8, 0, 0]}>
               <LabelList
+                dataKey="count"
                 position="top"
                 offset={12}
                 className="fill-foreground"
@@ -77,11 +113,8 @@ export function YearsOfResidency({selectedCollege}: YearsOfResidencyProps) {
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
         <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
+          Showing distribution of years of residency in Pasig
         </div>
       </CardFooter>
     </Card>
