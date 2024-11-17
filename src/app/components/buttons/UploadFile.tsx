@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/drawer";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 interface FileState {
@@ -27,7 +27,7 @@ interface ErrorState {
 export function UploadFile() {
     const [files, setFiles] = useState<FileState>({
         'Applicant-to-Enrollee Correlation': null,
-        'Cleaned Data CSV': null,
+        "Students' Ecological Profile": null,
     });
 
     const [errors, setErrors] = useState<ErrorState>({});
@@ -88,17 +88,17 @@ export function UploadFile() {
                     if (!response.ok) throw new Error("File upload for Applicant-to-Enrollee failed");
                 }
 
-                const cleanedDataFile = files['Cleaned Data CSV'];
-                if (cleanedDataFile) {
+                const studentEcologicalDataFile = files["Students' Ecological Profile"];
+                if (studentEcologicalDataFile) {
                     const formData = new FormData();
-                    formData.append('file', cleanedDataFile);
+                    formData.append('file', studentEcologicalDataFile);
 
-                    const response = await fetch('/api/cleaned-data', {
+                    const response = await fetch('/api/students-ecological-profile', {
                         method: 'POST',
                         body: formData,
                     });
 
-                    if (!response.ok) throw new Error("File upload for Cleaned Data CSV failed");
+                    if (!response.ok) throw new Error("File upload for Students' Ecological Profile failed");
                 }
 
                 toast.success("Files uploaded successfully! Reloading...", { autoClose: 3000 });
