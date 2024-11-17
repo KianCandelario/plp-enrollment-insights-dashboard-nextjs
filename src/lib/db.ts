@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { Database } from './types';
+import { Database } from './type';
 
 // Types based on your schema
 export interface EnrollmentData {
@@ -14,27 +14,35 @@ export interface EnrollmentData {
   updated_at: string;
 }
 
-export interface EnrollmentDashboard {
-  studentID: string;
-  gender: string;
-  age: number;
-  civilStatus: string;
-  religion: string;
-  course: string;
-  barangay: string;
-  isPasigueno: boolean;
-  familyMonthlyIncome: number;
-  feederSchoolType: string;
-  created_at: string;
-  updated_at: string;
-}
-
 export interface ApplicantEnrolleeCorrelation {
   id: number;
   academic_year: string;
   course: string;
   applicant_count: number;
   enrollee_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Dashboard {
+  email: string;
+  sex: string;
+  isLGBTQIA: string;
+  age: string;
+  civilStatus: string;
+  isPasigueno: string;
+  yearsInPasig: string;
+  barangay: string;
+  familyMonthlyIncome: string;
+  religion: string;
+  curricularProgram: string;
+  academicStatus: string;
+  workingStudent: string;
+  deansLister: string;
+  presidentsLister: string;
+  feederSchool: string;
+  strandInSHS: string;
+  isPWD: string;
   created_at: string;
   updated_at: string;
 }
