@@ -1,4 +1,3 @@
-// app/api/civil-status/route.ts
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/db';
 
@@ -7,9 +6,11 @@ interface CivilStatusCount {
   population: number;
 }
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const college = searchParams.get('college');
+  const url = new URL(request.url);
+  const college = url.searchParams.get('college');
 
   try {
     const batchSize = 1000;
@@ -17,18 +18,15 @@ export async function GET(request: Request) {
     let start = 0;
     let hasMore = true;
 
-    // Base query
     let query = supabase
       .from('Dashboard')
       .select('civilStatus')
       .filter('civilStatus', 'not.eq', null);
 
-    // Add college filter if specified
     if (college && college !== 'All Colleges') {
       query = query.ilike('curricularProgram', `${college}%`);
     }
 
-    // Fetch data in batches
     while (hasMore) {
       const { data, error } = await query.range(start, start + batchSize - 1);
       
@@ -40,7 +38,6 @@ export async function GET(request: Request) {
       start += batchSize;
     }
 
-    // Process data
     const formattedData = allData.reduce((acc: CivilStatusCount[], row: { civilStatus: string }) => {
       const existingStatus = acc.find((item) => item.civil_status === row.civilStatus);
       if (existingStatus) {

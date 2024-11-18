@@ -5,6 +5,8 @@ import { Readable } from 'stream';
 
 type CSVRecord = Record<string, any>;
 
+export const dynamic = 'force-dynamic';
+
 async function parseCSV(csvData: string): Promise<CSVRecord[]> {
   return new Promise((resolve, reject) => {
     const records: CSVRecord[] = [];
@@ -39,11 +41,10 @@ async function parseCSV(csvData: string): Promise<CSVRecord[]> {
 // api/applicant-enrollee/route.ts
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const courseCode = searchParams.get('courseCode');
+    const url = new URL(request.url);
+    const courseCode = url.searchParams.get('courseCode');
 
     if (courseCode === "All Colleges") {
-      // Fetch data for all colleges, aggregating by academic year
       const { data, error } = await supabase
         .from('ApplicantEnrolleeCorrelation')
         .select('academic_year, applicant_count, enrollee_count')
@@ -54,17 +55,16 @@ export async function GET(request: NextRequest) {
       if (!data || data.length === 0) {
         console.warn('No data found for all colleges');
         return NextResponse.json({
-          applicantEnrolleeData: [] // Respond with an empty array if no data is found
+          applicantEnrolleeData: []
         });
       }
 
-      // Aggregate totals across all courses for each academic year
       const totals = data.reduce((acc, curr) => {
         if (!acc[curr.academic_year]) {
           acc[curr.academic_year] = {
             academic_year: curr.academic_year,
-            applicant_count: 0,  // Align with ApplicantEnrolleeData structure
-            enrollee_count: 0    // Align with ApplicantEnrolleeData structure
+            applicant_count: 0,
+            enrollee_count: 0
           };
         }
         acc[curr.academic_year].applicant_count += curr.applicant_count || 0;
@@ -77,7 +77,6 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // If specific course is provided, fetch only that course's data
     const { data, error } = await supabase
       .from('ApplicantEnrolleeCorrelation')
       .select()

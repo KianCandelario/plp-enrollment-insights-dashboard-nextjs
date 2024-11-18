@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/db';
 
-interface IncomeData {
-  month: string;
-  students: number;
-}
+export const dynamic = 'force-dynamic';
 
 const incomeBrackets = [
   'Less than Php9,520',
