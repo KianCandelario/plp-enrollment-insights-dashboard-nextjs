@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const college = searchParams.get('college');
+    const curricularProgram = searchParams.get('college');
 
     const batchSize = 1000;
     let allData: any[] = [];
@@ -12,11 +12,11 @@ export async function GET(request: Request) {
     let end = batchSize - 1;
 
     let query = supabase
-      .from('EnrollmentDashboard')
-      .select('gender, course');
+      .from('Dashboard')
+      .select('sex');
 
-    if (college && college !== 'All Colleges') {
-      query = query.eq('course', college);
+    if (curricularProgram && curricularProgram !== 'All Colleges') {
+      query = query.eq('curricularProgram', curricularProgram);
     }
 
     while (true) {
@@ -31,19 +31,20 @@ export async function GET(request: Request) {
 
     const genderData = { female: 0, male: 0 };
     allData.forEach((row) => {
-      const gender = row.gender?.toLowerCase();
-      if (gender === 'female') {
+      const sex = row.sex?.toLowerCase();
+      if (sex === 'female') {
         genderData.female += 1;
-      } else if (gender === 'male') {
+      } else if (sex === 'male') {
         genderData.male += 1;
       }
     });
 
+    // Convert to array format with single object
     return NextResponse.json([genderData]);
   } catch (error) {
-    console.error('Error fetching gender data:', error);
+    console.error('Error fetching gender distribution data:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch gender data' },
+      { error: 'Failed to fetch gender distribution data' },
       { status: 500 }
     );
   }

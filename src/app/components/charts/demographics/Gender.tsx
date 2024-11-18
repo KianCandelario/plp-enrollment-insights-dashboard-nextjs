@@ -91,7 +91,7 @@ export function Gender({ selectedCollege }: GenderProps) {
   return (
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Gender</CardTitle>
+        <CardTitle>Sex</CardTitle>
         <CardDescription className="flex items-center">
           <PieChartIcon className="mr-1 h-4 w-4" />Male-to-Female Ratio
         </CardDescription>
@@ -99,7 +99,7 @@ export function Gender({ selectedCollege }: GenderProps) {
       <CardContent className="flex flex-1 flex-col items-center pb-4">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square w-full max-w-[250px]"
+          className="mx-auto aspect-square w-full max-w-[295px]"
         >
           <RadialBarChart
             data={chartData}

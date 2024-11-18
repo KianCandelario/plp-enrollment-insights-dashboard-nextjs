@@ -6,6 +6,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -21,7 +22,6 @@ interface ResidencyData {
   residency: string
 }
 
-// Define the chart configuration type with an index signature
 type ResidencyChartConfig = {
   [key: string]: {
     label: string;
@@ -75,6 +75,14 @@ export function Residency({ selectedCollege }: ResidencyProps) {
 
   const totalpopulation = React.useMemo(() => {
     return chartData.reduce((acc, curr) => acc + curr.population, 0)
+  }, [chartData])
+
+  const getPasigCount = React.useMemo(() => {
+    return chartData.find(item => item.residency.toLowerCase() === 'pasig')?.population || 0
+  }, [chartData])
+
+  const getNonPasigCount = React.useMemo(() => {
+    return chartData.find(item => item.residency.toLowerCase() === 'nonpasig')?.population || 0
   }, [chartData])
 
   if (isLoading) return <div>Loading...</div>
@@ -142,17 +150,22 @@ export function Residency({ selectedCollege }: ResidencyProps) {
             </Pie>
           </PieChart>
         </ChartContainer>
-        <div className="flex justify-center mt-1">
-          <div className="flex items-center mr-4 text-sm text-black_">
-            <div className="w-4 h-4 mr-2 bg-[hsl(var(--chart-1))] rounded"></div>
-            <span>Pasig</span> 
-          </div>
-          <div className="flex items-center text-sm text-black_">
-            <div className="w-4 h-4 mr-2 bg-[hsl(var(--chart-2))] rounded"></div>
-            <span>Non-Pasig</span>
+        <div className="flex flex-col items-center mt-1">
+          <div className="flex justify-center w-full mb-2">
+            <div className="flex items-center mr-4 text-sm text-black_">
+              <div className="w-4 h-4 mr-2 bg-[hsl(var(--chart-1))] rounded"></div>
+              <span>Pasig <b>({getPasigCount.toLocaleString()})</b></span> 
+            </div>
+            <div className="flex items-center text-sm text-black_">
+              <div className="w-4 h-4 mr-2 bg-[hsl(var(--chart-2))] rounded"></div>
+              <span>Non-Pasig <b>({getNonPasigCount.toLocaleString()})</b></span>
+            </div>
           </div>
         </div>
       </CardContent>
+      <CardFooter className="text-center text-sm text-muted-foreground mt-2">
+        Showing distribution of Pasigueno and Non-Pasigueno Students
+      </CardFooter>
     </Card>
   )
 }

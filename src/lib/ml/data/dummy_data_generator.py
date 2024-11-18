@@ -8,7 +8,7 @@ abpsych_start_year = 2022
 
 # Create the data
 data = []
-for year in range(2020, 2026):
+for year in range(2020, 2025):
     for course in courses:
         if course == 'ABPSYCH' and year < abpsych_start_year:
             continue

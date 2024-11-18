@@ -12,11 +12,11 @@ export async function GET(request: Request) {
     let end = batchSize - 1;
 
     let query = supabase
-      .from('EnrollmentDashboard')
-      .select('feederSchoolType, course');
+      .from('Dashboard')
+      .select('feederSchool, curricularProgram');
 
     if (course && course !== 'All Colleges') {
-      query = query.eq('course', course);
+      query = query.eq('curricularProgram', course);
     }
 
     while (true) {
@@ -30,22 +30,22 @@ export async function GET(request: Request) {
     }
 
     const schoolTypeCounts = allData.reduce((acc, row) => {
-      const type = row.feederSchoolType.toLowerCase();
+      const type = row.feederSchool.toLowerCase(); // Convert to lowercase for consistency
       acc[type] = (acc[type] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
 
     const chartData = Object.entries(schoolTypeCounts).map(([type, count]) => ({
-      browser: type,
+      browser: type === 'public' ? 'Public' : 'Private', // Proper case for display
       students: count,
-      fill: type === 'public' ? 'var(--color-public)' : 'var(--color-private)',
+      fill: type === 'public' ? 'hsl(var(--chart-1))' : 'hsl(var(--chart-2))',
     }));
 
     return NextResponse.json(chartData);
   } catch (error) {
-    console.error('Error fetching feeder school data:', error);
+    console.error('Error fetching data:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch feeder school data' },
+      { error: 'Failed to fetch data' },
       { status: 500 }
     );
   }

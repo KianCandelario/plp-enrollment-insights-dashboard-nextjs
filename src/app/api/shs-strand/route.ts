@@ -13,7 +13,7 @@ export async function GET(request: Request) {
 
     let query = supabase
       .from('Dashboard')
-      .select('religion, curricularProgram');
+      .select('strandInSHS, curricularProgram');
 
     if (college && college !== 'All Colleges') {
       query = query.like('curricularProgram', `${college}%`);
@@ -29,21 +29,23 @@ export async function GET(request: Request) {
       end += batchSize;
     }
 
-    const religionCounts: { [key: string]: number } = {};
-    allData.forEach((row: { religion: string }) => {
-      const { religion } = row;
-      religionCounts[religion] = (religionCounts[religion] || 0) + 1;
+    const strandCounts: { [key: string]: number } = {};
+    allData.forEach((row: { strandInSHS: string }) => {
+      const { strandInSHS } = row;
+      if (strandInSHS) { // Only count non-null/non-empty values
+        strandCounts[strandInSHS] = (strandCounts[strandInSHS] || 0) + 1;
+      }
     });
 
-    const result = Object.entries(religionCounts)
-      .map(([religion, population]) => ({ religion, population }))
-      .sort((a, b) => (b.population as number) - (a.population as number));
+    const result = Object.entries(strandCounts)
+      .map(([strand, count]) => ({ strand, count }))
+      .sort((a, b) => (b.count as number) - (a.count as number));
 
     return NextResponse.json(result);
   } catch (error) {
-    console.error('Error fetching religion data:', error);
+    console.error('Error fetching strand data:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch religion data' },
+      { error: 'Failed to fetch strand data' },
       { status: 500 }
     );
   }

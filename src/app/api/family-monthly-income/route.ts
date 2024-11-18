@@ -7,12 +7,13 @@ interface IncomeData {
 }
 
 const incomeBrackets = [
-  { label: 'Less than 9,520', min: -Infinity, max: 9519 },
-  { label: 'Between 9,520 to 21,194', min: 9520, max: 21194 },
-  { label: 'Between 21,195 to 43,838', min: 21195, max: 43838 },
-  { label: 'Between 43,839 to 76,669', min: 43839, max: 76669 },
-  { label: 'Between 76,670 to 131,484', min: 76670, max: 131484 },
-  { label: '131,485 and up', min: 131485, max: Infinity },
+  'Less than Php9,520',
+  'Between Php9,520 to Php21,194',
+  'Between Php21,195 to Php43,838',
+  'Between Php43,839 to Php76,669',
+  'Between Php76,670 to Php131,484',
+  'Between Php131,485 to Php219,140',
+  'From Php219,140 and up'
 ];
 
 export async function GET(request: NextRequest) {
@@ -26,11 +27,11 @@ export async function GET(request: NextRequest) {
     let end = batchSize - 1;
 
     let query = supabase
-      .from('EnrollmentDashboard')
-      .select('familyMonthlyIncome, course');
+      .from('Dashboard')
+      .select('familyMonthlyIncome, curricularProgram');
 
     if (selectedCollege && selectedCollege !== 'All Colleges') {
-      query = query.like('course', `${selectedCollege}%`);
+      query = query.like('curricularProgram', `${selectedCollege}%`);
     }
 
     while (true) {
@@ -44,10 +45,10 @@ export async function GET(request: NextRequest) {
     }
 
     const counts = incomeBrackets.map((bracket) => {
-      const students = allData.filter((row) =>
-        row.familyMonthlyIncome >= bracket.min && row.familyMonthlyIncome <= bracket.max
+      const students = allData.filter((row) => 
+        row.familyMonthlyIncome === bracket
       ).length;
-      return { month: bracket.label, students };
+      return { month: bracket, students };
     });
 
     return NextResponse.json({ success: true, data: counts });

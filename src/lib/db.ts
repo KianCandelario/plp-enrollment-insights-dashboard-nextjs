@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { Database } from './types';
+import { Database } from './type';
 
 // Types based on your schema
 export interface EnrollmentData {
@@ -14,27 +14,35 @@ export interface EnrollmentData {
   updated_at: string;
 }
 
-export interface EnrollmentDashboard {
-  studentID: string;
-  gender: string;
-  age: number;
-  civilStatus: string;
-  religion: string;
-  course: string;
-  barangay: string;
-  isPasigueno: boolean;
-  familyMonthlyIncome: number;
-  feederSchoolType: string;
-  created_at: string;
-  updated_at: string;
-}
-
 export interface ApplicantEnrolleeCorrelation {
   id: number;
   academic_year: string;
   course: string;
   applicant_count: number;
   enrollee_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Dashboard {
+  email: string;
+  sex: string;
+  isLGBTQIA: string;
+  age: string;
+  civilStatus: string;
+  isPasigueno: string;
+  yearsInPasig: string;
+  barangay: string;
+  familyMonthlyIncome: string;
+  religion: string;
+  curricularProgram: string;
+  academicStatus: string;
+  workingStudent: string;
+  deansLister: string;
+  presidentsLister: string;
+  feederSchool: string;
+  strandInSHS: string;
+  isPWD: string;
   created_at: string;
   updated_at: string;
 }
@@ -72,17 +80,17 @@ interface BarangayData {
   students: number;
 }
 
-export async function fetchResidencyData(college?: string): Promise<ResidencyData[]> {
+export async function fetchResidencyData(curricularProgram?: string): Promise<ResidencyData[]> {
   try {
     const batchSize = 1000;
     let allData: any[] = [];
     let start = 0;
     let end = batchSize - 1;
-    let query = supabase.from('EnrollmentDashboard').select('isPasigueno');
+    let query = supabase.from('Dashboard').select('isPasigueno');
 
-    // Add college filter if specified
-    if (college && college !== 'All Colleges') {
-      query = query.eq('course', college);
+    // Add curricular program filter if specified
+    if (curricularProgram && curricularProgram !== 'All Colleges') {
+      query = query.eq('curricularProgram', curricularProgram);
     }
 
     // Loop to fetch all data in batches
@@ -94,16 +102,16 @@ export async function fetchResidencyData(college?: string): Promise<ResidencyDat
         throw new Error(`Failed to fetch residency data: ${error.message}`);
       }
 
-      if (data.length === 0) break; // Exit when no more records are returned
+      if (data.length === 0) break;
 
-      allData = allData.concat(data); // Accumulate fetched data
+      allData = allData.concat(data);
       start += batchSize;
       end += batchSize;
     }
 
     // Count the occurrences manually
     const counts = allData.reduce((acc, row) => {
-      if (row.isPasigueno) {
+      if (row.isPasigueno === 'Yes') {
         acc.pasig = (acc.pasig || 0) + 1;
       } else {
         acc.nonpasig = (acc.nonpasig || 0) + 1;
@@ -116,7 +124,6 @@ export async function fetchResidencyData(college?: string): Promise<ResidencyDat
       { residency: 'nonpasig', population: counts.nonpasig }
     ];
 
-    console.log('Formatted Data:', formattedData);
     return formattedData;
 
   } catch (error) {
@@ -131,19 +138,18 @@ interface BarangayData {
   students: number;
 }
 
-export async function fetchPasigBarangayData(college?: string): Promise<BarangayData[]> {
+export async function fetchPasigBarangayData(curricularProgram?: string): Promise<BarangayData[]> {
   try {
     const batchSize = 1000;
     let allData: any[] = [];
     let start = 0;
     let end = batchSize - 1;
-    let query = supabase.from('EnrollmentDashboard').select('barangay').eq('isPasigueno', true);
+    let query = supabase.from('Dashboard').select('barangay').eq('isPasigueno', 'Yes');
 
-    if (college && college !== 'All Colleges') {
-      query = query.eq('course', college);
+    if (curricularProgram && curricularProgram !== 'All Colleges') {
+      query = query.eq('curricularProgram', curricularProgram);
     }
 
-    // Loop to fetch all data in batches
     while (true) {
       const { data, error } = await query.range(start, end);
       if (error) throw new Error(`Failed to fetch Pasig barangay data: ${error.message}`);
@@ -154,19 +160,7 @@ export async function fetchPasigBarangayData(college?: string): Promise<Barangay
       end += batchSize;
     }
 
-    // Group and count data manually
-    const barangayCounts = allData.reduce((acc: Record<string, number>, row) => {
-      const barangay = row.barangay || 'Unknown';
-      acc[barangay] = (acc[barangay] || 0) + 1;
-      return acc;
-    }, {});
-
-    // Convert to array and sort by student count
-    const formattedData: BarangayData[] = Object.entries(barangayCounts)
-      .map(([barangay, students]) => ({ barangay, students }))
-      .sort((a, b) => b.students - a.students);
-
-    return formattedData;
+    return processBarangayData(allData);
 
   } catch (error) {
     console.error('Error:', error);
@@ -175,19 +169,18 @@ export async function fetchPasigBarangayData(college?: string): Promise<Barangay
 }
 
 
-export async function fetchNonPasigResidentsData(college?: string): Promise<BarangayData[]> {
+export async function fetchNonPasigResidentsData(curricularProgram?: string): Promise<BarangayData[]> {
   try {
     const batchSize = 1000;
     let allData: any[] = [];
     let start = 0;
     let end = batchSize - 1;
-    let query = supabase.from('EnrollmentDashboard').select('barangay').eq('isPasigueno', false);
+    let query = supabase.from('Dashboard').select('barangay').eq('isPasigueno', 'No');
 
-    if (college && college !== 'All Colleges') {
-      query = query.eq('course', college);
+    if (curricularProgram && curricularProgram !== 'All Colleges') {
+      query = query.eq('curricularProgram', curricularProgram);
     }
 
-    // Loop to fetch all data in batches
     while (true) {
       const { data, error } = await query.range(start, end);
       if (error) throw new Error(`Failed to fetch non-Pasig residents data: ${error.message}`);
@@ -198,19 +191,7 @@ export async function fetchNonPasigResidentsData(college?: string): Promise<Bara
       end += batchSize;
     }
 
-    // Group and count data manually
-    const barangayCounts = allData.reduce((acc: Record<string, number>, row) => {
-      const barangay = row.barangay || 'Unknown';
-      acc[barangay] = (acc[barangay] || 0) + 1;
-      return acc;
-    }, {});
-
-    // Convert to array and sort by student count
-    const formattedData: BarangayData[] = Object.entries(barangayCounts)
-      .map(([barangay, students]) => ({ barangay, students }))
-      .sort((a, b) => b.students - a.students);
-
-    return formattedData;
+    return processBarangayData(allData);
 
   } catch (error) {
     console.error('Error:', error);
@@ -244,25 +225,25 @@ interface AgeData {
   students: number;
 }
 
+// Updated age groups constant
 const AGE_GROUPS = [
-  'Less than 18 years old',
-  '18-22 years old',
-  '23 years old and above'
+  'below 18 years old',
+  '18-24 years old',
+  '25 years old and above'
 ] as const;
 
-export async function fetchAgeDistribution(college?: string): Promise<AgeData[]> {
+export async function fetchAgeDistribution(curricularProgram?: string): Promise<AgeData[]> {
   try {
     const batchSize = 1000;
     let allData: any[] = [];
     let start = 0;
     let end = batchSize - 1;
-    let query = supabase.from('EnrollmentDashboard').select('age');
+    let query = supabase.from('Dashboard').select('age');
 
-    if (college && college !== 'All Colleges') {
-      query = query.eq('course', college);
+    if (curricularProgram && curricularProgram !== 'All Colleges') {
+      query = query.eq('curricularProgram', curricularProgram);
     }
 
-    // Loop to fetch all data in batches
     while (true) {
       const { data, error } = await query.range(start, end);
       if (error) throw new Error(`Failed to fetch age distribution: ${error.message}`);
@@ -273,16 +254,17 @@ export async function fetchAgeDistribution(college?: string): Promise<AgeData[]>
       end += batchSize;
     }
 
-    // Process age groups
+    // Process age groups with new grouping logic
     const ageGroups = allData.reduce((acc: Record<string, number>, row) => {
       let ageGroup: string;
       
-      if (row.age < 18) {
-        ageGroup = 'Less than 18 years old';
-      } else if (row.age >= 18 && row.age <= 22) {
-        ageGroup = '18-22 years old';
+      if (row.age === 'below 18 years old') {
+        ageGroup = 'below 18 years old';
+      } else if (['18 years old', '19 years old', '20 years old', '21 years old', 
+                  '22 years old', '23 years old', '24 years old'].includes(row.age)) {
+        ageGroup = '18-24 years old';
       } else {
-        ageGroup = '23 years old and above';
+        ageGroup = '25 years old and above';
       }
 
       acc[ageGroup] = (acc[ageGroup] || 0) + 1;
@@ -319,8 +301,11 @@ export function calculateAgePercentages(data: AgeData[]): (AgeData & { percentag
 }
 
 // Helper function to get age group for a given age
-export function getAgeGroup(age: number): string {
-  if (age < 18) return 'Less than 18 years old';
-  if (age <= 22) return '18-22 years old';
-  return '23 years old and above';
+export function getAgeGroup(age: string): string {
+  if (age === 'below 18 years old') return 'below 18 years old';
+  if (['18 years old', '19 years old', '20 years old', '21 years old', 
+       '22 years old', '23 years old', '24 years old'].includes(age)) {
+    return '18-24 years old';
+  }
+  return '25 years old and above';
 }

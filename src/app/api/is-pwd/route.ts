@@ -13,7 +13,7 @@ export async function GET(request: Request) {
 
     let query = supabase
       .from('Dashboard')
-      .select('religion, curricularProgram');
+      .select('isPWD, curricularProgram');
 
     if (college && college !== 'All Colleges') {
       query = query.like('curricularProgram', `${college}%`);
@@ -29,21 +29,27 @@ export async function GET(request: Request) {
       end += batchSize;
     }
 
-    const religionCounts: { [key: string]: number } = {};
-    allData.forEach((row: { religion: string }) => {
-      const { religion } = row;
-      religionCounts[religion] = (religionCounts[religion] || 0) + 1;
+    const pwdCounts = {
+      Yes: 0,
+      No: 0
+    };
+
+    allData.forEach((row: { isPWD: string }) => {
+      const status = row.isPWD || 'No'; // Default to 'No' if undefined
+      pwdCounts[status as keyof typeof pwdCounts]++;
     });
 
-    const result = Object.entries(religionCounts)
-      .map(([religion, population]) => ({ religion, population }))
-      .sort((a, b) => (b.population as number) - (a.population as number));
+    const result = Object.entries(pwdCounts).map(([status, count]) => ({
+      status,
+      count,
+      fill: status === 'Yes' ? 'hsl(var(--chart-1))' : 'hsl(var(--chart-2))'
+    }));
 
     return NextResponse.json(result);
   } catch (error) {
-    console.error('Error fetching religion data:', error);
+    console.error('Error fetching PWD data:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch religion data' },
+      { error: 'Failed to fetch PWD data' },
       { status: 500 }
     );
   }

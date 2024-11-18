@@ -67,7 +67,7 @@ export function PasigResidentStudents({ selectedCollege }: PasigResidentStudents
   if (error) return <div>Error loading data: {error}</div>
 
   // Calculate dynamic height based on number of items
-  const itemHeight = 30 // height per bar in pixels
+  const itemHeight = 35 // height per bar in pixels
   const totalHeight = Math.max(chartData.length * itemHeight, 400) // minimum height of 400px
 
   return (
@@ -89,6 +89,7 @@ export function PasigResidentStudents({ selectedCollege }: PasigResidentStudents
                 layout="vertical"
                 margin={{
                   left: -20,
+                  right: 50, // Added right margin for labels
                 }}
                 height={totalHeight}
               >
@@ -99,13 +100,13 @@ export function PasigResidentStudents({ selectedCollege }: PasigResidentStudents
                   tickLine={false}
                   tickMargin={10}
                   axisLine={false}
-                  width={120}
-                  
+                  width={140}
                 />
                 <XAxis 
                   dataKey="students" 
                   type="number"
-                  hide />
+                  hide 
+                />
                 <ChartTooltip
                   cursor={false}
                   content={<ChartTooltipContent indicator="line" />}
@@ -116,6 +117,12 @@ export function PasigResidentStudents({ selectedCollege }: PasigResidentStudents
                   fill="var(--color-students)"
                   radius={5}
                 >
+                  <LabelList 
+                    dataKey="students" 
+                    position="right" 
+                    fill="hsl(var(--foreground))"
+                    formatter={(value: number) => value.toLocaleString()}
+                  />
                 </Bar>
               </BarChart>
             </ChartContainer>
@@ -125,5 +132,3 @@ export function PasigResidentStudents({ selectedCollege }: PasigResidentStudents
     </Card>
   )
 }
-
-export default PasigResidentStudents;

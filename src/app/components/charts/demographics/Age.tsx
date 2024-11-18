@@ -58,7 +58,7 @@ export function Age({ selectedCollege }: AgeProps) {
   }, [selectedCollege])
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
         <CardTitle>Age</CardTitle>
         <CardDescription className="flex items-center">
@@ -66,7 +66,7 @@ export function Age({ selectedCollege }: AgeProps) {
           Age Distribution of the Enrollees
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="h-full">
         {loading ? (
           <div className="flex h-44 items-center justify-center">
             Loading...
@@ -76,7 +76,7 @@ export function Age({ selectedCollege }: AgeProps) {
             {error}
           </div>
         ) : (
-          <ChartContainer className="h-44 w-full" config={chartConfig}>
+          <ChartContainer className="h-[83%] w-full" config={chartConfig}>
             <BarChart
               accessibilityLayer
               data={chartData}

@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { BarChart2 } from "lucide-react"
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
 
 import {
   Card,
@@ -18,7 +18,6 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 
-// Define the type for items in chartData
 interface NonPasigResidentData {
   students: number
   barangay: string
@@ -68,7 +67,7 @@ export function NonPasigResidentStudents({ selectedCollege }: NonPasigResidentSt
   if (error) return <div>Error loading data: {error}</div>
 
   // Calculate dynamic height based on number of items
-  const itemHeight = 30 // height per bar in pixels
+  const itemHeight = 35 // height per bar in pixels
   const totalHeight = Math.max(chartData.length * itemHeight, 400) // minimum height of 400px
 
   return (
@@ -90,6 +89,7 @@ export function NonPasigResidentStudents({ selectedCollege }: NonPasigResidentSt
                 layout="vertical"
                 margin={{
                   left: -20,
+                  right: 50, // Added right margin for labels
                 }}
                 height={totalHeight}
               >
@@ -100,7 +100,7 @@ export function NonPasigResidentStudents({ selectedCollege }: NonPasigResidentSt
                   tickLine={false}
                   tickMargin={10}
                   axisLine={false}
-                  width={120}
+                  width={140}
                 />
                 <XAxis dataKey="students" type="number" hide />
                 <ChartTooltip
@@ -112,7 +112,14 @@ export function NonPasigResidentStudents({ selectedCollege }: NonPasigResidentSt
                   layout="vertical"
                   fill="var(--color-students)"
                   radius={5}
-                />
+                >
+                  <LabelList 
+                    dataKey="students" 
+                    position="right" 
+                    fill="hsl(var(--foreground))"
+                    formatter={(value: number) => value.toLocaleString()}
+                  />
+                </Bar>
               </BarChart>
             </ChartContainer>
           </div>
