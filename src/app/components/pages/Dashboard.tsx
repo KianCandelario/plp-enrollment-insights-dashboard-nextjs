@@ -73,13 +73,17 @@ const Dashboard = ({ selectedCollege }: DashboardProps) => {
           <div>
             <AcademicProgramEnrollment selectedCollege={selectedCollege} />
           </div>
-          <div className="flex">
-            <div className="flex-1">
+          <div className="flex gap-3">
+            <div className="w-[40%]">
               <StrandInSHS selectedCollege={selectedCollege} />
             </div>
-            <div className="flex flex-col">
-              <AcademicStatus selectedCollege={selectedCollege} />
-              <WorkingStudent selectedCollege={selectedCollege} />
+            <div className="flex gap-3 w-[60%]">
+              <div className="w-1/2">
+                <AcademicStatus selectedCollege={selectedCollege} />
+              </div>
+              <div className="w-1/2">
+                <WorkingStudent selectedCollege={selectedCollege} />
+              </div>
             </div>
           </div>
         </div>
@@ -92,21 +96,21 @@ const Dashboard = ({ selectedCollege }: DashboardProps) => {
           </div>
 
           <div className="flex gap-3 w-full">
-            <div className="flex flex-1 w-[30%]">
+            <div className="flex w-[30%]">
               <Residency selectedCollege={selectedCollege} />
             </div>
-            <div className="flex flex-1 w-[30%]">
+            <div className="flex-1">
+              <YearsOfResidency selectedCollege={selectedCollege} />
+            </div>
+          </div>
+          <div className="flex gap-3 w-full">
+            <div className="flex w-1/2">
               <PasigResidentStudents selectedCollege={selectedCollege} />
             </div>
-            <div className="flex flex-1 w-[30%]">
-            <NonPasigResidentStudents selectedCollege={selectedCollege} />
+            <div className="flex w-1/2">
+              <NonPasigResidentStudents selectedCollege={selectedCollege} />
             </div>
           </div>
-
-          <div>
-            <YearsOfResidency selectedCollege={selectedCollege} />
-          </div>
-          
         </div>
 
         {/* Demographics */}
@@ -116,33 +120,40 @@ const Dashboard = ({ selectedCollege }: DashboardProps) => {
            <h1 className={`${poppins.className} text-2xl font-bold ml-3`}>Demographics Summary</h1>
           </div>
 
-          <div className="flex gap-3">
-            <div className="flex flex-col w-[40%] gap-3">
-              <Gender selectedCollege={selectedCollege} />
-               <Age selectedCollege={selectedCollege} />
+          <div className="flex flex-col gap-3">
+            <div className="flex w-full gap-3">
+              <div className="w-1/3">
+                <Gender selectedCollege={selectedCollege} />
+              </div>
+              <div className="w-1/3">
+                <IsLGBTQIA selectedCollege={selectedCollege} />
+              </div>
+              <div className="w-1/3">
+                <IsPWD selectedCollege={selectedCollege} />
+              </div>
             </div>
-            <div className="flex flex-1 gap-3 w-[60%]">
-              <CivilStatusAndReligion selectedCollege={selectedCollege} />
+            <div className="flex flex-1 gap-3 w-full">
+              <div className="w-[40%] h-[617px]">
+                <Age selectedCollege={selectedCollege} />
+              </div>
+              <div className="w-[60%]">
+                <CivilStatusAndReligion selectedCollege={selectedCollege} />
+              </div>
             </div>
           </div>
-
-          <div className="flex">
-            <IsLGBTQIA selectedCollege={selectedCollege} />
-            <IsPWD selectedCollege={selectedCollege} />
-          </div>
-          
+  
         </div>
 
         {/* Academic Achievements */}
         <div className="flex-col">
-          <div>
+          <div className="mb-2">
             <h1 className={`${poppins.className} text-2xl font-bold ml-3`}>Academic Achievements</h1>
           </div>
-          <div className="flex">
-            <div>
+          <div className="flex w-full gap-3">
+            <div className="w-1/2">
               <DeansLister selectedCollege={selectedCollege} />
             </div>
-            <div>
+            <div className="w-1/2">
               <PresidentsLister selectedCollege={selectedCollege} />
             </div>
           </div>
