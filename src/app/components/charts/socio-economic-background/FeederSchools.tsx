@@ -16,6 +16,12 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
+interface SchoolData {
+  browser: 'Public' | 'Private';  // Changed to match API capitalization
+  students: number;
+  fill: string;
+}
+
 const chartConfig = {
   students: {
     label: "students",
@@ -35,7 +41,7 @@ interface FeederSchoolTypeProps {
 }
 
 export function FeederSchools({ selectedCollege }: FeederSchoolTypeProps) {
-  const [chartData, setChartData] = useState([]);
+  const [chartData, setChartData] = useState<SchoolData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -60,7 +66,15 @@ export function FeederSchools({ selectedCollege }: FeederSchoolTypeProps) {
   }, [selectedCollege]);
 
   const totalStudents = React.useMemo(() => {
-    return chartData.reduce((acc: number, curr: any) => acc + curr.students, 0)
+    return chartData.reduce((acc: number, curr: SchoolData) => acc + curr.students, 0);
+  }, [chartData]);
+
+  const publicStudents = React.useMemo(() => {
+    return chartData.find((item: SchoolData) => item.browser === 'Public')?.students || 0;
+  }, [chartData]);
+
+  const privateStudents = React.useMemo(() => {
+    return chartData.find((item: SchoolData) => item.browser === 'Private')?.students || 0;
   }, [chartData]);
 
   if (isLoading) {
@@ -84,6 +98,11 @@ export function FeederSchools({ selectedCollege }: FeederSchoolTypeProps) {
       </Card>
     );
   }
+
+  // Add console.log to debug
+  console.log('Chart Data:', chartData);
+  console.log('Public Students:', publicStudents);
+  console.log('Private Students:', privateStudents);
 
   return (
     <Card className="flex flex-col">
@@ -110,6 +129,7 @@ export function FeederSchools({ selectedCollege }: FeederSchoolTypeProps) {
               nameKey="browser"
               innerRadius={60}
               strokeWidth={5}
+              fill="fill"
             >
               <Label
                 content={({ viewBox }) => {
@@ -143,14 +163,20 @@ export function FeederSchools({ selectedCollege }: FeederSchoolTypeProps) {
             </Pie>
           </PieChart>
         </ChartContainer>
-        <div className="flex justify-center mb-3 mt-1">
-          <div className="flex items-center mr-4 text-sm text-black_">
+        <div className="flex justify-center gap-6 mb-3 mt-1">
+          <div className="flex items-center text-sm text-black_">
             <div className="w-4 h-4 mr-2 bg-[hsl(var(--chart-1))] rounded"></div>
-            <span>Public</span>
+            <span className="flex gap-2">
+              <span>Public:</span>
+              <span className="font-medium">{publicStudents.toLocaleString()}</span>
+            </span>
           </div>
           <div className="flex items-center text-sm text-black_">
             <div className="w-4 h-4 mr-2 bg-[hsl(var(--chart-2))] rounded"></div>
-            <span>Private</span>
+            <span className="flex gap-2">
+              <span>Private:</span>
+              <span className="font-medium">{privateStudents.toLocaleString()}</span>
+            </span>
           </div>
         </div>
       </CardContent>

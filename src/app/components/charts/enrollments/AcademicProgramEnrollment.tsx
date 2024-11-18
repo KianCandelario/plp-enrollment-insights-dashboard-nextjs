@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from 'react'
-import { BarChart2Icon } from "lucide-react"
+import { BarChart2Icon, Loader2 } from "lucide-react"
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis, Cell } from "recharts"
 
 import {
@@ -15,7 +15,6 @@ import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
-  ChartTooltipContent,
 } from "@/components/ui/chart"
 
 interface EnrollmentData {
@@ -45,7 +44,10 @@ export function AcademicProgramEnrollment({ selectedCollege }: AcademicProgramEn
         setIsLoading(true);
         setError(null);
         
-        const response = await fetch(`/api/enrollment-data${selectedCollege !== "All Colleges" ? `?college=${encodeURIComponent(selectedCollege)}` : ''}`);
+        const queryParams = new URLSearchParams();
+        // Now we always fetch all data, regardless of selected college
+        
+        const response = await fetch(`/api/enrollment-data?${queryParams.toString()}`);
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -59,9 +61,9 @@ export function AcademicProgramEnrollment({ selectedCollege }: AcademicProgramEn
 
         // Process the data to count enrollees per program
         const programCounts: { [key: string]: number } = {};
-        data.forEach((student: any) => {
-          if (student?.course) {
-            programCounts[student.course] = (programCounts[student.course] || 0) + 1;
+        data.forEach((student: { curricularProgram: string }) => {
+          if (student?.curricularProgram) {
+            programCounts[student.curricularProgram] = (programCounts[student.curricularProgram] || 0) + 1;
           }
         });
 
@@ -83,7 +85,7 @@ export function AcademicProgramEnrollment({ selectedCollege }: AcademicProgramEn
     };
 
     fetchData();
-  }, []); // Remove selectedCollege dependency since we're always fetching all data
+  }, []); // Remove selectedCollege dependency since we always fetch all data
 
   if (isLoading) {
     return (
@@ -92,7 +94,7 @@ export function AcademicProgramEnrollment({ selectedCollege }: AcademicProgramEn
           <CardTitle>Number of Enrollment per Curricular Program</CardTitle>
         </CardHeader>
         <CardContent className="h-72 flex items-center justify-center">
-          <span className="text-muted-foreground">Loading data...</span>
+          <Loader2 className="h-8 w-8 animate-spin" />
         </CardContent>
       </Card>
     );
@@ -125,9 +127,15 @@ export function AcademicProgramEnrollment({ selectedCollege }: AcademicProgramEn
   }
 
   const getBarColor = (program: string) => {
-    return program === selectedCollege 
-      ? "hsl(var(--primary))" // Highlight color for selected college
-      : "hsl(var(--primary) / 0.5)" // Muted color for other colleges
+    // If no college is selected or "All Colleges" is selected, show all bars in primary color
+    if (!selectedCollege || selectedCollege === "All Colleges") {
+      return "hsl(var(--primary))";
+    }
+    
+    // Highlight bars of selected college with primary color, others with muted color
+    return program.startsWith(selectedCollege)
+      ? "hsl(var(--primary))"
+      : "hsl(var(--muted-foreground) / 0.2)"; // More subtle color for non-selected programs
   };
 
   return (
@@ -136,7 +144,9 @@ export function AcademicProgramEnrollment({ selectedCollege }: AcademicProgramEn
         <CardTitle>Number of Enrollment per Curricular Program</CardTitle>
         <CardDescription className="flex items-center">
           <BarChart2Icon className="h-4 w-4 mr-1" /> 
-          Enrollees for Every Curricular Program
+          {selectedCollege === "All Colleges" 
+            ? "Enrollees for Every Curricular Program"
+            : `Highlighting Programs for ${selectedCollege}`}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -159,6 +169,9 @@ export function AcademicProgramEnrollment({ selectedCollege }: AcademicProgramEn
               interval={0}
               tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
               tickFormatter={(value) => value.slice(0, 15) + (value.length > 15 ? '...' : '')}
+              angle={-45}
+              textAnchor="end"
+              height={60}
             />
             <ChartTooltip
               cursor={{ fill: 'rgba(0, 0, 0, 0.1)' }}

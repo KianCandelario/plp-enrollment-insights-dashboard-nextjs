@@ -1,5 +1,5 @@
 // app/components/charts/demographics/CivilStatus.tsx
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
   Table,
   TableBody,
@@ -9,6 +9,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface CivilStatusProps {
   selectedCollege: string;
@@ -16,31 +18,32 @@ interface CivilStatusProps {
 
 interface CivilStatusData {
   civil_status: string;
-  population: string | number;
+  population: number;
 }
 
 const CivilStatus: React.FC<CivilStatusProps> = ({ selectedCollege }) => {
-  const [civilStatusData, setCivilStatusData] = useState<CivilStatusData[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [civilStatusData, setCivilStatusData] = React.useState<CivilStatusData[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchCivilStatusData = async (): Promise<void> => {
+  React.useEffect(() => {
+    const fetchCivilStatusData = async () => {
       try {
         setLoading(true);
         setError(null);
-        
-        const response = await fetch(`/api/civil-status?college=${encodeURIComponent(selectedCollege)}`);
-        
+
+        const response = await fetch(
+          `/api/civil-status?college=${encodeURIComponent(selectedCollege)}`
+        );
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const data: CivilStatusData[] = await response.json();
-        console.log('Fetched data:', data); // For debugging
         setCivilStatusData(data);
-      } catch (error) {
-        console.error('Error fetching civil status data:', error);
+      } catch (err) {
+        console.error('Error fetching civil status data:', err);
         setError('Failed to load civil status data');
       } finally {
         setLoading(false);
@@ -51,35 +54,44 @@ const CivilStatus: React.FC<CivilStatusProps> = ({ selectedCollege }) => {
   }, [selectedCollege]);
 
   if (error) {
-    return <div className="text-red-500 text-center p-4">{error}</div>;
+    return (
+      <Alert variant="destructive">
+        <AlertCircle className="h-4 w-4" />
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
+    );
   }
 
   return (
     <Table>
       <TableCaption>
-        Provides insights into the proportion of single, married, <br /> 
+        Provides insights into the proportion of single, married,
         and other categories among enrollees.
       </TableCaption>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[90%]">Civil Status</TableHead>
-          <TableHead>Population</TableHead>
+          <TableHead>Civil Status</TableHead>
+          <TableHead className="text-right">Population</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {loading ? (
           <TableRow>
-            <TableCell colSpan={2} className="text-center">Loading...</TableCell>
+            <TableCell colSpan={2} className="text-center">
+              Loading...
+            </TableCell>
           </TableRow>
         ) : civilStatusData.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={2} className="text-center">No data available</TableCell>
+            <TableCell colSpan={2} className="text-center">
+              No data available
+            </TableCell>
           </TableRow>
         ) : (
           civilStatusData.map((status) => (
-            <TableRow key={status.civil_status} className="h-14">
+            <TableRow key={status.civil_status}>
               <TableCell className="font-medium">{status.civil_status}</TableCell>
-              <TableCell>{status.population}</TableCell>
+              <TableCell className="text-right">{status.population}</TableCell>
             </TableRow>
           ))
         )}
