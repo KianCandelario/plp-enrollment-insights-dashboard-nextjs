@@ -62,21 +62,21 @@ export function InfoButton() {
                                     Download
                                 </Button>
                             </div>
-                            <p className="text-xs text-gray-600 ml-1">Sample file for Applicant-to-Enrollee correlation data</p>
+                            <p className="text-xs text-gray-600 ml-1">Sample file for Applicant-to-Enrollee correlation format</p>
                         </div>
 
                         <div className="flex flex-col space-y-1 p-3 bg-gray-100">
                             <div className="flex items-center justify-between">
-                                <span className="font-medium text-sm">cleaned_data_sample.csv</span>
+                                <span className="font-medium text-sm">students_ecological_profile_sample.csv</span>
                                 <Button 
                                     className="rounded"
                                     variant="outline" 
                                     size="sm"
                                     onClick={() => {
-                                        const fileUrl = '/sample-files/cleaned_data_sample.csv';
+                                        const fileUrl = '/sample-files/students_ecological_profile_sample.csv';
                                         const link = document.createElement('a');
                                         link.href = fileUrl;
-                                        link.download = 'cleaned_data_sample.csv';
+                                        link.download = 'students_ecological_profile_sample.csv';
                                         document.body.appendChild(link);
                                         link.click();
                                         document.body.removeChild(link);
@@ -86,7 +86,7 @@ export function InfoButton() {
                                     Download
                                 </Button>
                             </div>
-                            <p className="text-xs text-gray-600 ml-1">Sample file for Cleaned Data format</p>
+                            <p className="text-xs text-gray-600 ml-1">Sample file for Students' Ecological Profile format</p>
                         </div>
                     </div>
 
@@ -104,13 +104,16 @@ export function InfoButton() {
                             <p className="ml-2 my-2 text-sm">
                                 <strong>Required Columns:</strong> <code>academic_year</code>, <code>course</code>, <code>applicant_count</code>, <code>enrollee_count</code>
                                 <br />
-                                <strong>Note:</strong> These columns are case-sensitive. Ensure they appear exactly as shown.
+                                <br />
+                                <strong>Note:</strong> 
+                                These columns are case-sensitive, so make sure they are formatted exactly as shown. Additionally, it's recommended to limit the range to four or five years to preserve the chart's readability.
                             </p>
                         </div>
                         <div>
-                            <span className="text-md font-semibold">Cleaned Data CSV File</span>
+                            <span className="text-md font-semibold">Students' Ecological Profile File</span>
                             <p className="ml-2 my-2 text-sm">
-                                <strong>Required Columns:</strong> <code>studentID</code>, <code>gender</code>, <code>age</code>, <code>civilStatus</code>, <code>religion</code>, <code>course</code>, <code>barangay</code>, <code>familyMonthlyIncome</code>, <code>feederSchoolType</code>
+                                <strong>Required Columns:</strong> <code>email</code>, <code>sex</code>, <code>isLGBTQIA</code>, <code>age</code>, <code>civilStatus</code>, <code>isPasigueno</code>, <code>yearsInPasig</code>, <code>barangay</code>, <code>familyMonthlyIncome</code>, <code>religion</code>, <code>curricularProgram</code>, <code>academicStatus</code>, <code>workingStudent</code>, <code>deansLister</code>, <code>presidentsLister</code>, <code>feederSchool</code>, <code>strandInSHS</code>, <code>isPWD</code>
+                                <br />
                                 <br />
                                 <strong>Note:</strong> Column names are case-sensitive and must match precisely.
                             </p>
