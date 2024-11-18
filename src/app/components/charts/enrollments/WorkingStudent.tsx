@@ -98,7 +98,7 @@ export function WorkingStudent({ selectedCollege }: WorkingStudentProps) {
       <CardContent className="flex-1 pb-0">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px] px-0"
+          className="mx-auto aspect-square max-h-[280px] px-0"
         >
           <PieChart>
             <ChartTooltip content={<CustomTooltip />} />

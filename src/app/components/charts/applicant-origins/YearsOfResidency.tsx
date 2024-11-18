@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { TrendingUp, TrendingDown } from "lucide-react"
+import { BarChart2Icon } from "lucide-react"
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
 
 import {
@@ -65,12 +65,12 @@ export function YearsOfResidency({ selectedCollege }: YearsOfResidencyProps) {
     <Card>
       <CardHeader>
         <CardTitle>Years of Residency in Pasig</CardTitle>
-        <CardDescription>
-          Distribution for {selectedCollege || "All Colleges"}
+        <CardDescription className="flex items-center">
+        <BarChart2Icon className="w-4 h-4 mr-1" /> <span>Distribution for {selectedCollege || "All Colleges"}</span>
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig}>
+        <ChartContainer className="h-[280px] w-full" config={chartConfig}>
           <BarChart
             accessibilityLayer
             data={data}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { TrendingUp, Loader2 } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import { Pie, PieChart, Legend } from "recharts"
 
 import {
@@ -14,7 +14,6 @@ import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
-  ChartTooltipContent,
 } from "@/components/ui/chart"
 
 const chartConfig = {
@@ -37,13 +36,16 @@ interface IsPWDProps {
 
 const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
-    const status = payload[0].payload.status;
-    const count = payload[0].value;
-    const label = status === "Yes" ? "PWD" : "Non-PWD";
+    const data = payload[0].payload;
+    const total = payload[0].payload.total;
+    const percentage = ((data.count / total) * 100).toFixed(1);
+    const label = data.status === "Yes" ? "PWD" : "Non-PWD";
     return (
       <div className="rounded-lg border bg-background p-2 shadow-sm">
         <div className="font-medium">{label}</div>
-        <div className="text-sm text-muted-foreground">{count.toLocaleString()}</div>
+        <div className="text-sm text-muted-foreground">
+          {data.count.toLocaleString()} ({percentage}%)
+        </div>
       </div>
     );
   }
@@ -51,29 +53,36 @@ const CustomTooltip = ({ active, payload }: any) => {
 };
 
 export function IsPWD({ selectedCollege }: IsPWDProps) {
-  const [pwdData, setPwdData] = useState<Array<{ status: string; count: number; fill: string }>>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [total, setTotal] = useState(0);
+  const [pwdData, setPwdData] = useState<Array<{ status: string; count: number; fill: string; total: number }>>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [total, setTotal] = useState(0)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(true);
-        const response = await fetch(`/api/is-pwd?college=${encodeURIComponent(selectedCollege)}`);
-        if (!response.ok) throw new Error('Failed to fetch data');
-        const data = await response.json();
-        setPwdData(data);
-        setTotal(data.reduce((acc: number, curr: { count: number }) => acc + curr.count, 0));
+        setLoading(true)
+        const response = await fetch(`/api/is-pwd?college=${encodeURIComponent(selectedCollege)}`)
+        if (!response.ok) throw new Error('Failed to fetch data')
+        
+        const data = await response.json()
+        const totalCount = data.reduce((acc: number, curr: { count: number }) => acc + curr.count, 0)
+        const transformedData = data.map((item: any) => ({
+          ...item,
+          fill: item.status === 'Yes' ? 'hsl(var(--chart-1))' : 'hsl(var(--chart-2))',
+          total: totalCount
+        }))
+        setPwdData(transformedData)
+        setTotal(totalCount)
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
+        setError(err instanceof Error ? err.message : 'An error occurred')
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
-    fetchData();
-  }, [selectedCollege]);
+    fetchData()
+  }, [selectedCollege])
 
   if (error) {
     return (
@@ -83,7 +92,7 @@ export function IsPWD({ selectedCollege }: IsPWDProps) {
         </CardHeader>
         <CardContent>{error}</CardContent>
       </Card>
-    );
+    )
   }
 
   return (
@@ -96,13 +105,13 @@ export function IsPWD({ selectedCollege }: IsPWDProps) {
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         {loading ? (
-          <div className="flex h-[250px] items-center justify-center">
+          <div className="flex h-[270px] items-center justify-center">
             <Loader2 className="h-8 w-8 animate-spin" />
           </div>
         ) : (
           <ChartContainer
             config={chartConfig}
-            className="mx-auto aspect-square max-h-[250px] px-0"
+            className="mx-auto aspect-square max-h-[270px] px-0"
           >
             <PieChart>
               <ChartTooltip content={<CustomTooltip />} />
@@ -136,9 +145,6 @@ export function IsPWD({ selectedCollege }: IsPWDProps) {
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 font-medium leading-none">
           Total Students: {total.toLocaleString()}
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Distribution of PWD and Non-PWD Students
         </div>
       </CardFooter>
     </Card>

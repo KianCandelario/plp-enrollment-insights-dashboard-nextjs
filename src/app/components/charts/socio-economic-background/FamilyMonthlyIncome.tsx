@@ -79,7 +79,7 @@ export function FamilyMonthlyIncome({ selectedCollege }: FamilyMonthlyIncomeProp
             {error}
           </div>
         ) : (
-          <ChartContainer className="h-60 w-full" config={chartConfig}>
+          <ChartContainer className="h-64 w-full" config={chartConfig}>
             <BarChart
               accessibilityLayer
               data={chartData}
@@ -93,7 +93,7 @@ export function FamilyMonthlyIncome({ selectedCollege }: FamilyMonthlyIncomeProp
                 tickLine={false}
                 tickMargin={10}
                 axisLine={false}
-                height={35}
+                height={55}
                 tick={<CustomTick x={0} y={0} payload={{
                   value: ""
                 }} />}
@@ -147,9 +147,9 @@ const CustomTick: React.FC<CustomTickProps> = ({ x, y, payload }) => {
       {lines.map((line, index) => (
         <text
           key={index}
-          dy={index * 12}
+          dy={index * 15}
           textAnchor="middle"
-          fontSize={12}
+          fontSize={11}
           className="fill-muted-foreground"
         >
           {line}

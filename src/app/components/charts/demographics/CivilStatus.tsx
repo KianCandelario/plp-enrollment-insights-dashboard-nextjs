@@ -89,7 +89,7 @@ const CivilStatus: React.FC<CivilStatusProps> = ({ selectedCollege }) => {
           </TableRow>
         ) : (
           civilStatusData.map((status) => (
-            <TableRow key={status.civil_status}>
+            <TableRow key={status.civil_status} className='h-16'>
               <TableCell className="font-medium">{status.civil_status}</TableCell>
               <TableCell className="text-right">{status.population}</TableCell>
             </TableRow>
