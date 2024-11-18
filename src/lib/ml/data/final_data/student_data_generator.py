@@ -63,16 +63,21 @@ def generate_user_data(count=100):
         '16 - 20 years', '21 - 25 years', '26 years and above'
     ]
     
-    barangays = [
+    # Define Pasig barangays
+    pasig_barangays = [
         'Bagong Ilog', 'Bagong Katipunan', 'Bambang', 'Buting', 'Caniogan',
         'Dela Paz', 'Kalawaan', 'Kapasigan', 'Kapitolyo', 'Malinao',
-        'Manggahan', 'Maybunga', 'Oranbo', 'Palatiw', 'Pineda', 'Rosario',
-        'Sagad', 'San Antonio', 'San Joaquin', 'San Jose', 'San Miguel',
-        'Santa Cruz', 'Santa Lucia', 'Santa Rosa', 'Santo Tomas', 'Santolan',
-        'Sumilang', 'Ugong', 'San Nicolas', 'Pinagbuhatan', 'Cainta', 'Taytay',
-        'Taguig City', 'Pateros', 'Antipolo', 'Marikina City', 'Binangonan',
-        'Mandaluyong City', 'Montalban, Rizal', 'Quezon City', 'Bulacan',
-        'Catanduanes', 'Cavite', 'Teresa'
+        'Manggahan', 'Maybunga', 'Oranbo', 'Palatiw', 'Pinagbuhatan', 'Pineda',
+        'Rosario', 'Sagad', 'San Antonio', 'San Joaquin', 'San Jose', 'San Miguel',
+        'San Nicolas', 'Santa Cruz', 'Santa Lucia', 'Santa Rosa', 'Santo Tomas',
+        'Santolan', 'Sumilang', 'Ugong'
+    ]
+    
+    # Non-Pasig locations
+    other_locations = [
+        'Cainta', 'Taytay', 'Taguig City', 'Pateros', 'Antipolo', 'Marikina City',
+        'Binangonan', 'Mandaluyong City', 'Montalban, Rizal', 'Quezon City',
+        'Bulacan', 'Catanduanes', 'Cavite', 'Teresa'
     ]
 
     income_ranges = [
@@ -119,19 +124,19 @@ def generate_user_data(count=100):
         is_lgbtqia = 'Yes' if random.random() < probabilities['lgbtqia'] else 'No'
         age = random.choice(age_ranges)
         civil_status = random.choice(civil_status_options)
-        is_pasigueno = 'Yes' if random.random() < probabilities['pasigueno'] else 'No'
         
-        if is_pasigueno == 'Yes':
-            age_index = age_ranges.index(age)
-            max_years_index = min(age_index, len(years_in_pasig_ranges) - 1)
-            years_in_pasig = random.choice(years_in_pasig_ranges[:max_years_index + 1])
+        # First determine if they should be a Pasigueno based on probability
+        initial_is_pasigueno = 'Yes' if random.random() < probabilities['pasigueno'] else 'No'
+        
+        # Select barangay based on Pasigueno status
+        if initial_is_pasigueno == 'Yes':
+            barangay = random.choice(pasig_barangays)
+            is_pasigueno = 'Yes'  # This is definitely a Pasig resident
+            years_in_pasig = random.choice(years_in_pasig_ranges)
         else:
+            barangay = random.choice(other_locations)
+            is_pasigueno = 'No'  # This is definitely not a Pasig resident
             years_in_pasig = 'less than 1 year'
-        
-        if is_pasigueno == 'Yes':
-            barangay = random.choice(barangays[:30] * 3 + barangays[30:])
-        else:
-            barangay = random.choice(barangays[30:] * 3 + barangays[:30])
         
         family_monthly_income = random.choice(income_ranges)
         religion = random.choice(religions)
