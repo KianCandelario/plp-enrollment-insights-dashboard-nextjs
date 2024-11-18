@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export const maxDuration = 300;
+export const maxDuration = 60;
 
 export async function DELETE(_request: NextRequest) {
   try {
