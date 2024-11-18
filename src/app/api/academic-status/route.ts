@@ -1,10 +1,12 @@
 import { supabase } from '@/lib/db';
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic'; // Explicitly set route as dynamic
+
 export async function GET(request: Request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const college = searchParams.get('college');
+    const url = new URL(request.url);
+    const college = url.searchParams.get('college');
 
     const batchSize = 1000;
     let allData: any[] = [];

@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const course = searchParams.get('course');
+  const url = new URL(request.url);
+  const course = url.searchParams.get('course');
 
   try {
     const batchSize = 1000;
@@ -30,13 +32,13 @@ export async function GET(request: Request) {
     }
 
     const schoolTypeCounts = allData.reduce((acc, row) => {
-      const type = row.feederSchool.toLowerCase(); // Convert to lowercase for consistency
+      const type = row.feederSchool.toLowerCase();
       acc[type] = (acc[type] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
 
     const chartData = Object.entries(schoolTypeCounts).map(([type, count]) => ({
-      browser: type === 'public' ? 'Public' : 'Private', // Proper case for display
+      browser: type === 'public' ? 'Public' : 'Private',
       students: count,
       fill: type === 'public' ? 'hsl(var(--chart-1))' : 'hsl(var(--chart-2))',
     }));

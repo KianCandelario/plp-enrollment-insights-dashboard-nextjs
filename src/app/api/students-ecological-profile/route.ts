@@ -5,6 +5,8 @@ import { supabase } from '@/lib/db';
 import { parse as parseCSVLib } from 'csv-parse';
 import { Readable } from 'stream';
 
+export const dynamic = 'force-dynamic'
+
 async function parseCSV(csvData: string): Promise<any[]> {
   return new Promise((resolve, reject) => {
     const records: any[] = [];
@@ -137,6 +139,8 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+export const maxDuration = 60;
 
 export async function DELETE(_request: NextRequest) {
   try {

@@ -1,10 +1,12 @@
 import { supabase } from '@/lib/db';
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: Request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const curricularProgram = searchParams.get('college');
+    const url = new URL(request.url);
+    const curricularProgram = url.searchParams.get('college');
 
     const batchSize = 1000;
     let allData: any[] = [];
@@ -39,7 +41,6 @@ export async function GET(request: Request) {
       }
     });
 
-    // Convert to array format with single object
     return NextResponse.json([genderData]);
   } catch (error) {
     console.error('Error fetching gender distribution data:', error);

@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server';
 import { fetchAgeDistribution } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: Request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const college = searchParams.get('college');
+    const url = new URL(request.url);
+    const college = url.searchParams.get('college');
 
     const data = await fetchAgeDistribution(college || undefined);
     return NextResponse.json(data);
