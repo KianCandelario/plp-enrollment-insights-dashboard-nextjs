@@ -25,7 +25,7 @@ const ResetVisualization = () => {
     try {
       const endpoints = [
         '/api/applicant-enrollee',
-        '/api/cleaned-data'
+        '/api/students-ecological-profile'
       ];
 
       const results = await Promise.allSettled(
