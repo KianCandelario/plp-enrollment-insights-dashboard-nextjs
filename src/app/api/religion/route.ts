@@ -12,11 +12,11 @@ export async function GET(request: Request) {
     let end = batchSize - 1;
 
     let query = supabase
-      .from('EnrollmentDashboard')
-      .select('religion, course');
+      .from('Dashboard')
+      .select('religion, curricularProgram');
 
     if (college && college !== 'All Colleges') {
-      query = query.like('course', `${college}%`);
+      query = query.like('curricularProgram', `${college}%`);
     }
 
     while (true) {
