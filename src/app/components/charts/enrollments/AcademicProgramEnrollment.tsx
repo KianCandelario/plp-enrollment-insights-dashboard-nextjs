@@ -150,7 +150,7 @@ export function AcademicProgramEnrollment({ selectedCollege }: AcademicProgramEn
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer className="h-72 w-full" config={chartConfig}>
+        <ChartContainer className="h-80 w-full" config={chartConfig}>
           <BarChart
             data={chartData}
             margin={{

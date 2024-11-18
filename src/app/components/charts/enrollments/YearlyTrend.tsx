@@ -49,6 +49,24 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
+// Updated CustomLabel component to round numbers to integers
+const CustomLabel = (props: any) => {
+  const { x, y, value } = props;
+  if (!value) return null;
+  
+  return (
+    <text 
+      x={x} 
+      y={y - 10} 
+      fill="#666"
+      textAnchor="middle" 
+      fontSize="12"
+    >
+      {Math.round(value)}
+    </text>
+  );
+};
+
 interface YearlyTrendProps {
   courseCode: string;
 }
@@ -62,13 +80,13 @@ export function YearlyTrend({ courseCode = 'GRAND_TOTAL' }: YearlyTrendProps) {
     const fetchData = async () => {
       try {
         setLoading(true);
-        console.log('Selected courseCode:', courseCode); // Debug log
+        console.log('Selected courseCode:', courseCode);
         
         const response = await fetch(`/api/enrollments?courseCode=${encodeURIComponent(courseCode)}`);
         if (!response.ok) throw new Error(`Failed to fetch data: ${response.statusText}`);
         
         const data: ApiEnrollmentRecord[] = await response.json();
-        console.log('Received data for courseCode:', courseCode, data); // Detailed debug log
+        console.log('Received data for courseCode:', courseCode, data);
         
         const transformedData: EnrollmentRecord[] = data.map((item) => ({
           year: item.year.toString(),
@@ -89,7 +107,7 @@ export function YearlyTrend({ courseCode = 'GRAND_TOTAL' }: YearlyTrendProps) {
     };
   
     fetchData();
-  }, [courseCode]); // Add courseCode as dependency
+  }, [courseCode]);
 
   if (loading) return <div className="p-4">Loading...</div>;
   if (error) return <div className="p-4 text-red-500">Error: {error}</div>;
@@ -103,13 +121,13 @@ export function YearlyTrend({ courseCode = 'GRAND_TOTAL' }: YearlyTrendProps) {
         <CardDescription>{yearRange}</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer className="h-64 w-full" config={chartConfig}>
+        <ChartContainer className="h-80 w-full" config={chartConfig}>
           <LineChart
             data={enrollmentData}
             margin={{
               left: 20,
               right: 20,
-              top: 20,
+              top: 40,
               bottom: 20,
             }}
           >
@@ -141,6 +159,7 @@ export function YearlyTrend({ courseCode = 'GRAND_TOTAL' }: YearlyTrendProps) {
               activeDot={{
                 r: 6,
               }}
+              label={<CustomLabel />}
             />
             {/* Forecast line */}
             <Line
@@ -153,6 +172,7 @@ export function YearlyTrend({ courseCode = 'GRAND_TOTAL' }: YearlyTrendProps) {
                 fill: "var(--color-forecast)",
                 r: 4,
               }}
+              label={<CustomLabel />}
             />
             {/* Confidence bounds */}
             <Line
@@ -188,3 +208,5 @@ export function YearlyTrend({ courseCode = 'GRAND_TOTAL' }: YearlyTrendProps) {
     </Card>
   );
 }
+
+export default YearlyTrend;

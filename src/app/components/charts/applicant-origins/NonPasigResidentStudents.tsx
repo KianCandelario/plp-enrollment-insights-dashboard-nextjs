@@ -100,7 +100,7 @@ export function NonPasigResidentStudents({ selectedCollege }: NonPasigResidentSt
                   tickLine={false}
                   tickMargin={10}
                   axisLine={false}
-                  width={120}
+                  width={140}
                 />
                 <XAxis dataKey="students" type="number" hide />
                 <ChartTooltip

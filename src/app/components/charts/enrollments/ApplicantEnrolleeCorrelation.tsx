@@ -33,6 +33,29 @@ const chartConfig: ChartConfig = {
   },
 };
 
+const CustomLabel = (props: any) => {
+  const { x, y, width, value } = props;
+  
+  if (!value) return null;
+
+  const displayValue = value;
+  const xPos = x + width / 2;
+  const yPos = y - 10; // Moved above the bar
+  
+  return (
+    <text
+      x={xPos}
+      y={yPos}
+      fill="#666"
+      textAnchor="middle"
+      fontSize={12}
+      className="font-medium"
+    >
+      {displayValue.toLocaleString()}
+    </text>
+  );
+};
+
 interface ApplicantEnrolleeCorrelationProps {
   course: string;
 }
@@ -106,19 +129,27 @@ export function ApplicantEnrolleeCorrelation({ course }: ApplicantEnrolleeCorrel
   return (
     <Card className="w-[40%]">
       <CardHeader>
-        <CardTitle>Applicant-to-Enrollee Correlation</CardTitle>
+        <CardTitle>Applicant and Enrollee Comparison</CardTitle>
         <CardDescription>
           <span className="flex items-center">
             <BarChart2Icon className="h-4 w-4 mr-1" /> 
             <span>
-              Applicant-to-Enrollee Fallout Over the Years
+              Comparing Applicants and Enrollees Over the Years
             </span>
           </span>
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer className="h-72 w-full" config={chartConfig}>
-          <BarChart data={chartData}>
+        <ChartContainer className="h-80 w-full" config={chartConfig}>
+          <BarChart 
+            data={chartData}
+            margin={{
+              top: 30,
+              right: 20,
+              bottom: 20,
+              left: 20,
+            }}
+          >
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="academic_year"
@@ -129,18 +160,18 @@ export function ApplicantEnrolleeCorrelation({ course }: ApplicantEnrolleeCorrel
             />
             <ChartTooltip content={<ChartTooltipContent hideLabel />} />
             <Bar
-              name="Enrollees"
-              dataKey="enrollee_count"
-              stackId="a"
-              fill="var(--color-enrollees)"
-              radius={[0, 0, 4, 4]}
-            />
-            <Bar
               name="Applicants"
               dataKey="applicant_count"
-              stackId="a"
               fill="var(--color-applicants)"
-              radius={[4, 4, 0, 0]}
+              radius={[4, 4, 4, 4]}
+              label={<CustomLabel />}
+            />
+            <Bar
+              name="Enrollees"
+              dataKey="enrollee_count"
+              fill="var(--color-enrollees)"
+              radius={[4, 4, 4, 4]}
+              label={<CustomLabel />}
             />
             <Legend content={CustomLegend} />
           </BarChart>
@@ -149,3 +180,5 @@ export function ApplicantEnrolleeCorrelation({ course }: ApplicantEnrolleeCorrel
     </Card>
   );
 }
+
+export default ApplicantEnrolleeCorrelation;

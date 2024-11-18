@@ -111,7 +111,7 @@ export function IsPWD({ selectedCollege }: IsPWDProps) {
         ) : (
           <ChartContainer
             config={chartConfig}
-            className="mx-auto aspect-square max-h-[270px] px-0"
+            className="mx-auto aspect-square w-full max-h-[270px] px-0"
           >
             <PieChart>
               <ChartTooltip content={<CustomTooltip />} />
