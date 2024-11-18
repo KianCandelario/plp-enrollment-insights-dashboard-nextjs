@@ -186,9 +186,7 @@ export async function POST(request: NextRequest) {
 }
 
 // Increase vercel function timeout
-export const config = {
-  maxDuration: 300 // 5 minutes instead of default 10 seconds
-};
+export const maxDuration = 300;
 
 
 export async function DELETE() {
