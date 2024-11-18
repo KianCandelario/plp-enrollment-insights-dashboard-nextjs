@@ -64,14 +64,16 @@ const Dashboard = ({ selectedCollege }: DashboardProps) => {
               Enrollment Overview
             </h1>
           </div>
-          <div className="flex gap-3">
+          <div>
             <YearlyTrend 
               courseCode={selectedCollege || 'GRAND_TOTAL'} 
             />
-            <ApplicantEnrolleeCorrelation course={selectedCollege} />
           </div>
-          <div>
-            <AcademicProgramEnrollment selectedCollege={selectedCollege} />
+          <div className="flex gap-3">
+            <ApplicantEnrolleeCorrelation course={selectedCollege} />
+            <div className="flex-1">
+              <AcademicProgramEnrollment selectedCollege={selectedCollege} />
+            </div>
           </div>
           <div className="flex gap-3">
             <div className="w-[40%]">
