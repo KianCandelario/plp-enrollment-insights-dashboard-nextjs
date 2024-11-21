@@ -39,8 +39,8 @@ const Dashboard = ({ selectedCollege }: DashboardProps) => {
       <Card>
         <CardHeader>
           <CardTitle className="flex justify-between items-center">
-            <span className={`${poppins.className} text-4xl font-bold`}>
-              PLP Enrollment Insights & Forecasting
+            <span className={`${poppins.className} text-3xl font-bold`}>
+              PLP Students' Ecological Profile Insights & Forecasting
             </span>
             <ResetVisualization />
           </CardTitle>

@@ -122,7 +122,7 @@ const Login = () => {
                 <div className='text-white_ flex flex-col justify-center items-center gap-4'>
                     <h1 className={`${poppins.className} text-3xl font-bold`}>Log In your account</h1>
                     <p className={`${quicksand.className} text-xs text-center leading-4 text-gray-200`}>
-                        Start exploring PLP's Enrollment Insights Dashboard. <br /> Dive deep into student enrollment data, uncovering trends and patterns <br /> that provide actionable insights.
+                        Start exploring PLP's Students' Ecological Profile Dashboard. <br /> Dive deep into students' data, uncovering trends and patterns <br /> that provide actionable insights.
                     </p>
                 </div>
             </div>

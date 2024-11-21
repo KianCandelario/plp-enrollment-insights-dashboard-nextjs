@@ -26,9 +26,9 @@ const LandingPage = () => {
             height={170}
           />
           <h1
-            className={`${poppins.className} text-6xl font-bold leading-tight drop-shadow-2xl`}
+            className={`${poppins.className} text-5xl font-bold leading-tight drop-shadow-2xl`}
           >
-            PLP's Enrollment <br /> Dashboard
+            PLP's Students' <br /> Ecological Profile <br /> Dashboard
           </h1>
         </div>
 
