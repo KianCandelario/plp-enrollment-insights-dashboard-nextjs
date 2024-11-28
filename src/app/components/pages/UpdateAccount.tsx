@@ -124,7 +124,7 @@ const UpdateAccount: React.FC = () => {
   return (
     <div className="max-w-md mx-auto">
       {/* ToastContainer for toast notifications */}
-      <ToastContainer position="bottom-right" />
+      <ToastContainer position="top-left" />
       <Card>
         <CardHeader>
           <CardTitle>
