@@ -3,6 +3,7 @@
 import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
 import db from '@/app/utilities/firebase/firestore';
+import { validatePassword } from '@/app/utilities/passwordValidation';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,6 +50,15 @@ const UpdateAccount: React.FC = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    
+    // Validate new password if it's being changed
+    if (newPassword) {
+      const passwordValidation = validatePassword(newPassword);
+      if (!passwordValidation.isValid) {
+        setError(passwordValidation.error);
+        return;
+      }
+    }
     
     if (newPassword !== confirmNewPassword) {
       setError('New passwords do not match');
