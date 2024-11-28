@@ -3,7 +3,7 @@ import { NextResponse, NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
 // Set the session timeout (in milliseconds)
-const SESSION_TIMEOUT = 15 * 60 * 1000; // 15 minutes
+const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
 
 export async function middleware(req: NextRequest) {
   const token = await getToken({
