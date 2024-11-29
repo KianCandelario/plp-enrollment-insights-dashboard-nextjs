@@ -8,7 +8,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import { ApplicantEnrolleeCorrelation } from "../charts/enrollments/ApplicantEnrolleeCorrelation";
 import { AcademicProgramEnrollment } from "../charts/enrollments/AcademicProgramEnrollment";
 import { Residency } from "../charts/applicant-origins/Residency";
@@ -56,7 +56,6 @@ const Dashboard = ({ selectedCollege }: DashboardProps) => {
       </Card>
 
       <div className="flex flex-col gap-7">
-
         {/* Enrollments */}
         <div className="flex flex-col gap-3">
           <div>
@@ -65,9 +64,7 @@ const Dashboard = ({ selectedCollege }: DashboardProps) => {
             </h1>
           </div>
           <div>
-            <YearlyTrend 
-              courseCode={selectedCollege || 'GRAND_TOTAL'} 
-            />
+            <YearlyTrend courseCode={selectedCollege || "GRAND_TOTAL"} />
           </div>
           <div className="flex gap-3">
             <ApplicantEnrolleeCorrelation course={selectedCollege} />
@@ -92,9 +89,10 @@ const Dashboard = ({ selectedCollege }: DashboardProps) => {
 
         {/* Applicant Origins */}
         <div className="w-full flex flex-col gap-3">
-
           <div>
-           <h1 className={`${poppins.className} text-2xl font-bold ml-3`}>Applicant Origins</h1>
+            <h1 className={`${poppins.className} text-2xl font-bold ml-3`}>
+              Applicant Origins
+            </h1>
           </div>
 
           <div className="flex gap-3 w-full">
@@ -117,9 +115,10 @@ const Dashboard = ({ selectedCollege }: DashboardProps) => {
 
         {/* Demographics */}
         <div className="flex flex-col gap-3">
-
           <div>
-           <h1 className={`${poppins.className} text-2xl font-bold ml-3`}>Demographics Summary</h1>
+            <h1 className={`${poppins.className} text-2xl font-bold ml-3`}>
+              Demographics Summary
+            </h1>
           </div>
 
           <div className="flex flex-col gap-3">
@@ -143,13 +142,14 @@ const Dashboard = ({ selectedCollege }: DashboardProps) => {
               </div>
             </div>
           </div>
-  
         </div>
 
         {/* Academic Achievements */}
         <div className="flex-col">
           <div className="mb-2">
-            <h1 className={`${poppins.className} text-2xl font-bold ml-3`}>Academic Achievements</h1>
+            <h1 className={`${poppins.className} text-2xl font-bold ml-3`}>
+              Academic Achievements
+            </h1>
           </div>
           <div className="flex w-full gap-3">
             <div className="w-1/2">
@@ -164,15 +164,17 @@ const Dashboard = ({ selectedCollege }: DashboardProps) => {
         {/* Socio-Economic Background */}
         <div className="flex flex-col gap-3">
           <div>
-           <h1 className={`${poppins.className} text-2xl font-bold ml-3`}>Socio-Economic Background</h1>
+            <h1 className={`${poppins.className} text-2xl font-bold ml-3`}>
+              Socio-Economic Background
+            </h1>
           </div>
           <div className="flex gap-3">
             <div className="w-[63%]">
-              <FamilyMonthlyIncome selectedCollege={selectedCollege} /> 
+              <FamilyMonthlyIncome selectedCollege={selectedCollege} />
             </div>
             <div className="w-[37%]">
               <FeederSchools selectedCollege={selectedCollege} />
-            </div> 
+            </div>
           </div>
         </div>
       </div>

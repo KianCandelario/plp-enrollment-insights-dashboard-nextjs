@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import Link from 'next/link';
+import Link from "next/link";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,7 +27,10 @@ const Account = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button className="w-full h-full flex items-center justify-between hover:bg-gray-200 rounded" variant="ghost">
+        <Button
+          className="w-full h-full flex items-center justify-between hover:bg-gray-200 rounded"
+          variant="ghost"
+        >
           <div className="flex h-full items-center">
             <Avatar>
               <AvatarImage src="/images/plp_logo.png" />
@@ -35,7 +38,9 @@ const Account = () => {
             </Avatar>
             <div className="ml-2">
               <p className="text-xs text-slate-500">Currently signed in:</p>
-              <p className={`${quicksand.className} font-bold text-left`}>PLP-SSO</p>
+              <p className={`${quicksand.className} font-bold text-left`}>
+                PLP-SSO
+              </p>
             </div>
           </div>
           <div>
@@ -59,6 +64,6 @@ const Account = () => {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-}
+};
 
 export default Account;

@@ -11,7 +11,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
+} from "@/components/ui/tooltip";
 
 const LandingPage = () => {
   return (
@@ -39,17 +39,12 @@ const LandingPage = () => {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button
-                className="bg-[#94a684] rounded h-12 w-36 font-semibold">
+              <Button className="bg-[#94a684] rounded h-12 w-36 font-semibold">
                 <Link
                   className={`${quicksand.className} flex justify-center items-center h-full text-sm relative z-10`}
                   href={"/login"}
                 >
-                  <LogInIcon 
-                    width={18}
-                    height={18}
-                    className="mr-2.5"
-                  />
+                  <LogInIcon width={18} height={18} className="mr-2.5" />
                   Get Started
                 </Link>
               </Button>
