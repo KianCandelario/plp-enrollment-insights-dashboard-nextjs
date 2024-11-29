@@ -1,47 +1,110 @@
+// Login.tsx
 "use client";
 
 import Image from "next/image";
+import { LockIcon } from "lucide-react";
 import { poppins, quicksand } from "../utilities/fonts";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
 import { LogInError } from "@/app/components/alert/LogInError";
+import { trackLoginAttempt, checkLoginAttempts } from "@/app/utilities/loginAttempts";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [loading, setLoading] = useState(false); // New state for loading
+  const [loading, setLoading] = useState(false);
+  const [remainingAttempts, setRemainingAttempts] = useState(3);
+  const [lockTimeRemaining, setLockTimeRemaining] = useState(0);
+
+  // Check login attempts when username changes
+  useEffect(() => {
+    const checkAttempts = async () => {
+      if (username) {
+        const attemptStatus = await checkLoginAttempts(username);
+        
+        if (attemptStatus.isLocked) {
+          setErrorMessage(`Account is locked. Try again in ${attemptStatus.lockTimeRemaining} seconds.`);
+          setLockTimeRemaining(attemptStatus.lockTimeRemaining || 0);
+        } else {
+          setRemainingAttempts(attemptStatus.remainingAttempts || 3);
+          setLockTimeRemaining(0);
+        }
+      }
+    };
+
+    checkAttempts();
+  }, [username]);
+
+  // Countdown timer for locked account
+  useEffect(() => {
+    if (lockTimeRemaining > 0) {
+      const timer = setInterval(() => {
+        setLockTimeRemaining(prev => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            setErrorMessage('');
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [lockTimeRemaining]);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); // Prevent the form from refreshing the page
-
-    // Reset the error message and set loading to true
+    e.preventDefault();
     setErrorMessage("");
     setLoading(true);
 
-    // Call signIn with username and password
-    const result = await signIn("credentials", {
-      redirect: false,
-      username,
-      password,
-    });
+    // Check if account is locked
+    if (lockTimeRemaining > 0) {
+      setErrorMessage(`Account is locked. Try again in ${lockTimeRemaining} seconds.`);
+      setLoading(false);
+      return;
+    }
 
-    if (!result?.ok) {
-      // If login fails, show an error message
-      setErrorMessage("Invalid username or password.");
-      setLoading(false); // Stop loading on failure
+    try {
+      // Attempt to sign in
+      const result = await signIn("credentials", {
+        redirect: false,
+        username,
+        password,
+      });
 
-      // Automatically hide the error message after 4 seconds
-      setTimeout(() => {
-        setErrorMessage("");
-      }, 4000);
-    } else {
-      window.location.href = "/dashboard";
+      // Track login attempt
+      const loginAttemptResult = await trackLoginAttempt(username, !!result?.ok);
+
+      if (!result?.ok) {
+        // Login failed
+        if (loginAttemptResult.isLocked) {
+          // Account is now locked
+          setErrorMessage(`Too many failed attempts. Account locked for ${loginAttemptResult.lockTimeRemaining} seconds.`);
+          setLockTimeRemaining(loginAttemptResult.lockTimeRemaining || 0);
+        } else {
+          // Show remaining attempts
+          setErrorMessage(`Invalid username or password. ${loginAttemptResult.remainingAttempts} attempt(s) remaining.`);
+        }
+        setLoading(false);
+
+        // Automatically hide the error message after 4 seconds
+        setTimeout(() => {
+          setErrorMessage("");
+        }, 4000);
+      } else {
+        // Successful login
+        window.location.href = "/dashboard";
+      }
+    } catch (error) {
+      setErrorMessage("An error occurred during login.");
+      setLoading(false);
     }
   };
 
@@ -58,13 +121,26 @@ const Login = () => {
           PLP Student Success Office
         </h1>
 
-        <div className="w-[80%] mt-5">
+        <div className="w-[80%] mt-5 ">
+          {/* Enhanced Lockout Countdown Display */}
+          {lockTimeRemaining > 0 && (
+            <div className="mb-4 flex items-center justify-center">
+              <div className={`bg-red-100 text-red-700 px-4 py-2 rounded flex items-center animate-pulse ${quicksand.className} text-sm`}>
+                <LockIcon className="w-5 h-5 mr-2" />
+                <span className="font-semibold">
+                  Account Locked: {Math.floor(lockTimeRemaining / 60)}m {lockTimeRemaining % 60}s remaining
+                </span>
+              </div>
+            </div>
+          )}
+
           {/* Display error message */}
-          {errorMessage && (
+          {errorMessage && !lockTimeRemaining && (
             <div className="mb-2 -mt-2">
               <LogInError errorMessage={errorMessage} />
             </div>
           )}
+
           <form
             className="flex flex-col gap-5 items-center"
             onSubmit={handleSubmit}
@@ -123,7 +199,7 @@ const Login = () => {
               }`}
               type="submit"
               value={loading ? "Signing in..." : "Log In"}
-              disabled={loading} // Disable the button while loading
+              disabled={loading || lockTimeRemaining > 0}
             />
           </form>
         </div>
