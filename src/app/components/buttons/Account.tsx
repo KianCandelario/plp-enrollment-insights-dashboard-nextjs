@@ -60,6 +60,11 @@ const Account = () => {
               <ChevronsRight /> Edit Account
             </DropdownMenuItem>
           </Link>
+          <Link href="/add_account">
+            <DropdownMenuItem className="hover:cursor-pointer">
+              <ChevronsRight /> Add Account
+            </DropdownMenuItem>
+          </Link>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
