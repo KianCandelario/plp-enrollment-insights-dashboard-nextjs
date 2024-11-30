@@ -28,21 +28,81 @@ import { IsLGBTQIA } from "../charts/demographics/IsLGBTQIA";
 import { IsPWD } from "../charts/demographics/IsPWD";
 import { DeansLister } from "../charts/academic-achievements/DeansLister";
 import { PresidentsLister } from "../charts/academic-achievements/PresidentsLister";
+import React, { useRef } from 'react';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import { Button } from "@/components/ui/button";
+import { Download } from 'lucide-react';
 
 interface DashboardProps {
   selectedCollege: string;
 }
 
 const Dashboard = ({ selectedCollege }: DashboardProps) => {
+  const dashboardRef = useRef<HTMLDivElement>(null);
+
+  const handleExportPDF = async () => {
+    if (!dashboardRef.current) return;
+
+    // Disable buttons during export
+    const resetButton = document.querySelector('button[aria-label="Reset Visualization"]');
+    const exportButton = document.querySelector('button[aria-label="Export PDF"]');
+    
+    if (resetButton) (resetButton as HTMLButtonElement).disabled = true;
+    if (exportButton) (exportButton as HTMLButtonElement).disabled = true;
+
+    try {
+      // Capture the entire dashboard
+      const canvas = await html2canvas(dashboardRef.current, {
+        scale: 2, // Increases resolution
+        useCORS: true, // Helps with rendering external images
+        logging: false, // Disable logging
+        allowTaint: true, // Allows rendering of images from other domains
+      });
+
+      // Create PDF
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'px',
+        format: [canvas.width, canvas.height]
+      });
+
+      // Add image to PDF
+      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+
+      // Save PDF
+      pdf.save(`PLP_Students_Ecological_Profile_${selectedCollege || 'All_Colleges'}_${new Date().toISOString().split('T')[0]}.pdf`);
+    } catch (error) {
+      console.error('Error exporting PDF:', error);
+      alert('Failed to export PDF. Please try again.');
+    } finally {
+      // Re-enable buttons
+      if (resetButton) (resetButton as HTMLButtonElement).disabled = false;
+      if (exportButton) (exportButton as HTMLButtonElement).disabled = false;
+    }
+  };
+
   return (
-    <div className="z-10 flex flex-col p-10 space-y-5 bg-gray-50">
+    <div ref={dashboardRef} className="z-10 flex flex-col p-10 space-y-5 bg-gray-50">
       <Card>
         <CardHeader>
           <CardTitle className="flex justify-between items-center">
             <span className={`${poppins.className} text-3xl font-bold`}>
               PLP Students' Ecological Profile Insights & Forecasting
             </span>
-            <ResetVisualization />
+            <div className="flex items-center space-x-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                aria-label="Export PDF"
+                onClick={handleExportPDF}
+                className="flex items-center gap-2 rounded"
+              >
+                <Download size={13} /> Export PDF
+              </Button>
+              <ResetVisualization />
+            </div>
           </CardTitle>
           <CardDescription>
             <span className={`${quicksand.className} `}>
@@ -55,6 +115,7 @@ const Dashboard = ({ selectedCollege }: DashboardProps) => {
         </CardContent>
       </Card>
 
+      {/* Rest of the dashboard remains the same */}
       <div className="flex flex-col gap-7">
         {/* Enrollments */}
         <div className="flex flex-col gap-3">
