@@ -100,6 +100,9 @@ const Login = () => {
         }, 4000);
       } else {
         // Successful login
+        // Store username and determine role
+        localStorage.setItem('userUsername', username);
+        localStorage.setItem('userRole', username === 'plp_admin' ? 'admin' : 'staff');
         window.location.href = "/dashboard";
       }
     } catch (error) {

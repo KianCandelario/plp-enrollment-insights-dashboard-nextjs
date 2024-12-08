@@ -1,5 +1,4 @@
 // components/Dashboard.tsx
-
 import { poppins, quicksand } from "@/app/utilities/fonts";
 import { YearlyTrend } from "../charts/enrollments/YearlyTrend";
 import {
@@ -28,7 +27,7 @@ import { IsLGBTQIA } from "../charts/demographics/IsLGBTQIA";
 import { IsPWD } from "../charts/demographics/IsPWD";
 import { DeansLister } from "../charts/academic-achievements/DeansLister";
 import { PresidentsLister } from "../charts/academic-achievements/PresidentsLister";
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Button } from "@/components/ui/button";
@@ -40,6 +39,15 @@ interface DashboardProps {
 
 const Dashboard = ({ selectedCollege }: DashboardProps) => {
   const dashboardRef = useRef<HTMLDivElement>(null);
+  const [currentUserRole, setCurrentUserRole] = useState<string>('staff');
+
+  useEffect(() => {
+    // Check role from localStorage
+    const storedRole = localStorage.getItem('userRole');
+    if (storedRole) {
+      setCurrentUserRole(storedRole);
+    }
+  }, []);
 
   const handleExportPDF = async () => {
     if (!dashboardRef.current) return;
@@ -101,7 +109,7 @@ const Dashboard = ({ selectedCollege }: DashboardProps) => {
               >
                 <Download size={13} /> Export PDF
               </Button>
-              <ResetVisualization />
+              {currentUserRole === 'admin' && <ResetVisualization />}
             </div>
           </CardTitle>
           <CardDescription>

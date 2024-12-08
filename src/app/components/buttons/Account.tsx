@@ -39,7 +39,7 @@ const Account = () => {
             <div className="ml-2">
               <p className="text-xs text-slate-500">Currently signed in:</p>
               <p className={`${quicksand.className} font-bold text-left`}>
-                PLP-SSO
+                Admin
               </p>
             </div>
           </div>
