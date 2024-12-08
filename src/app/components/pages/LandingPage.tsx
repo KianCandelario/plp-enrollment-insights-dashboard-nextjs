@@ -5,13 +5,15 @@ import { quicksand, poppins } from "../../utilities/fonts";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { LogInIcon } from "lucide-react";
+import { Separator } from "@radix-ui/react-separator";
 
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
+} from "@/components/ui/tooltip";
+import DPAPolicyButton from "../buttons/DPAPolicyButton";
 
 const LandingPage = () => {
   return (
@@ -36,29 +38,30 @@ const LandingPage = () => {
           Gain actionable insights to inform decisions and shape <br /> the
           future of education at Pamantasan ng <br /> Lungsod ng Pasig.
         </p>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                className="bg-[#94a684] rounded h-12 w-36 font-semibold">
-                <Link
-                  className={`${quicksand.className} flex justify-center items-center h-full text-sm relative z-10`}
-                  href={"/login"}
-                >
-                  <LogInIcon 
-                    width={18}
-                    height={18}
-                    className="mr-2.5"
-                  />
-                  Get Started
-                </Link>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent className="rounded mb-1">
-              <p className={`${quicksand.className}`}>Go to Login page</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <div className="flex">
+          <DPAPolicyButton />
+
+          <Separator orientation="vertical" className="mx-3" />
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button className="bg-[#94a684] rounded h-12 w-36">
+                  <Link
+                    className={`flex justify-center items-center h-full text-sm relative z-10`}
+                    href={"/login"}
+                  >
+                    <LogInIcon size={15} className="mr-2.5" />
+                    Get Started
+                  </Link>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent className="rounded mb-1">
+                <p>Go to Login page</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
       </div>
       <div className="absolute left-1/2">
         <Image

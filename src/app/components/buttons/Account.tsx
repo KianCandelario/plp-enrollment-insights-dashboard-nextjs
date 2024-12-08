@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import Link from 'next/link';
+import Link from "next/link";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronsUpDown, User2, ChevronsRight } from "lucide-react";
+import { ChevronsUpDown, ChevronsRight, SettingsIcon } from "lucide-react";
 import { quicksand } from "@/app/utilities/fonts";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -27,7 +27,10 @@ const Account = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button className="w-full h-full flex items-center justify-between hover:bg-gray-200 rounded" variant="ghost">
+        <Button
+          className="w-full h-full flex items-center justify-between hover:bg-gray-200 rounded"
+          variant="ghost"
+        >
           <div className="flex h-full items-center">
             <Avatar>
               <AvatarImage src="/images/plp_logo.png" />
@@ -35,7 +38,9 @@ const Account = () => {
             </Avatar>
             <div className="ml-2">
               <p className="text-xs text-slate-500">Currently signed in:</p>
-              <p className={`${quicksand.className} font-bold text-left`}>PLP-SSO</p>
+              <p className={`${quicksand.className} font-bold text-left`}>
+                Admin
+              </p>
             </div>
           </div>
           <div>
@@ -45,8 +50,8 @@ const Account = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" side="right" className="w-56 rounded">
         <DropdownMenuLabel>
-          <User2 className="mb-1" />
-          Account
+          <SettingsIcon className="mb-1" />
+          Settings
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
@@ -55,10 +60,25 @@ const Account = () => {
               <ChevronsRight /> Edit Account
             </DropdownMenuItem>
           </Link>
+          <Link href="/add_account">
+            <DropdownMenuItem className="hover:cursor-pointer">
+              <ChevronsRight /> Add Account
+            </DropdownMenuItem>
+          </Link>
+          <Link href="/login_history">
+            <DropdownMenuItem className="hover:cursor-pointer">
+              <ChevronsRight /> Login History
+            </DropdownMenuItem>
+          </Link>
+          <Link href="/dpa_policy">
+            <DropdownMenuItem className="hover:cursor-pointer">
+              <ChevronsRight /> DPA Policy
+            </DropdownMenuItem>
+          </Link>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   );
-}
+};
 
 export default Account;

@@ -1,7 +1,35 @@
+import 'next-auth';
+import 'next-auth/jwt';
 import CredentialsProvider from "next-auth/providers/credentials";
-import { collection, query, where, limit, getDocs } from "firebase/firestore"; // Import Firestore methods
+import { collection, query, where, limit, getDocs } from "firebase/firestore";
 import db from "@/app/utilities/firebase/firestore";
-import { NextAuthOptions } from "next-auth";
+import { DefaultSession, NextAuthOptions } from "next-auth";
+
+// Type extensions
+declare module 'next-auth' {
+  interface Session {
+    user: {
+      id: string;
+      username: string;
+      userID: string;
+    } & DefaultSession['user']
+  }
+
+  interface User {
+    id: string;
+    username: string;
+    userID: string;
+  }
+}
+
+declare module 'next-auth/jwt' {
+  interface JWT {
+    id: string;
+    username: string;
+    userID: string;
+    lastActivity?: number;
+  }
+}
 
 export const options: NextAuthOptions = {
     providers: [
@@ -18,7 +46,6 @@ export const options: NextAuthOptions = {
                 }
             },
             async authorize(credentials) {
-                // Check if credentials is defined
                 if (!credentials) {
                     return null;
                 }
@@ -26,28 +53,23 @@ export const options: NextAuthOptions = {
                 const { username, password } = credentials;
                 
                 try {
-                    // Query Firestore to find the user by role
-                    const userCollectionRef = collection(db, "users");  // Use collection() to reference "users" collection
-                    const q = query(userCollectionRef, where("username", "==", username), limit(1));  // Query to match the username
-                    const userSnapshot = await getDocs(q);  // Execute the query and get the matching documents
+                    const userCollectionRef = collection(db, "users");
+                    const q = query(userCollectionRef, where("username", "==", username), limit(1));
+                    const userSnapshot = await getDocs(q);
           
                     if (userSnapshot.empty) {
-                      // No matching user found
                       return null;
                     }
           
-                    const userData = userSnapshot.docs[0].data();  // Get the first matched user data
+                    const userData = userSnapshot.docs[0].data();
           
-                    // Compare password from Firestore with the provided one
                     if (userData.password === password) {
-                      // If the password matches, return the user object
                       return {
                         id: userSnapshot.docs[0].id,
                         username: userData.username,
-                        userID: userData.userID,  // Assuming you store userID in Firestore
+                        userID: userData.userID,
                       };
                     } else {
-                      // If the password doesn't match, return null
                       return null;
                     }
                 } catch (error) {
@@ -59,6 +81,33 @@ export const options: NextAuthOptions = {
     ],
 
     pages: {
-        signIn: '/login',  // Redirect to login page
-    }
-} 
+        signIn: '/login',
+    },
+
+    session: {
+      strategy: 'jwt',
+      maxAge: 30 * 60, // 30 minutes
+    },
+
+    callbacks: {
+        async jwt({ token, user }) {
+            if (user) {
+                token.id = user.id;
+                token.username = user.username;
+                token.userID = user.userID;
+                token.lastActivity = Date.now();
+            }
+            return token;
+        },
+        async session({ session, token }) {
+            if (session.user) {
+                session.user.id = token.id;
+                session.user.username = token.username;
+                session.user.userID = token.userID;
+            }
+            return session;
+        }
+    },
+
+    secret: process.env.NEXTAUTH_SECRET
+}

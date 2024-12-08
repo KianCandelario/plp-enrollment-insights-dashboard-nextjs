@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
-import { doc, updateDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import db from "@/app/utilities/firebase/firestore";
 import { validatePassword } from "@/app/utilities/passwordValidation";
 import {
@@ -22,104 +22,59 @@ import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const UpdateAccount: React.FC = () => {
+const AddAccount: React.FC = () => {
   const [username, setUsername] = useState<string>("");
-  const [currentPassword, setCurrentPassword] = useState<string>("");
-  const [newPassword, setNewPassword] = useState<string>("");
-  const [confirmNewPassword, setConfirmNewPassword] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [showPasswords, setShowPasswords] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const userDocRef = doc(db, "users", "usersID");
-        const userDoc = await getDoc(userDocRef);
-
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          setUsername(userData.username || "");
-        }
-      } catch (err) {
-        console.error("Error fetching user data:", err);
-      }
-    };
-
-    fetchUserData();
-  }, []);
-
   const handleUsernameChange = (e: ChangeEvent<HTMLInputElement>) =>
     setUsername(e.target.value);
-  const handleCurrentPasswordChange = (e: ChangeEvent<HTMLInputElement>) =>
-    setCurrentPassword(e.target.value);
-  const handleNewPasswordChange = (e: ChangeEvent<HTMLInputElement>) =>
-    setNewPassword(e.target.value);
-  const handleConfirmNewPasswordChange = (e: ChangeEvent<HTMLInputElement>) =>
-    setConfirmNewPassword(e.target.value);
+  const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) =>
+    setPassword(e.target.value);
+  const handleConfirmPasswordChange = (e: ChangeEvent<HTMLInputElement>) =>
+    setConfirmPassword(e.target.value);
   const handleShowPasswordsToggle = () => setShowPasswords(!showPasswords);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-  
-    // Validate new password if it's being changed
-    if (newPassword) {
-      const passwordValidation = validatePassword(newPassword);
-      if (!passwordValidation.isValid) {
-        setError(passwordValidation.error);
-        return;
-      }
-    }
-  
-    if (newPassword !== confirmNewPassword) {
-      setError("New passwords do not match");
+
+    // Validate password
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      setError(passwordValidation.error);
       return;
     }
-  
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
     try {
       setIsLoading(true);
       setError("");
-  
-      const userDocRef = doc(db, "users", username);
-      const userDoc = await getDoc(userDocRef);
-  
-      if (!userDoc.exists()) {
-        setError("User not found");
-        return;
-      }
-  
-      const userData = userDoc.data();
-  
-      if (userData.password !== currentPassword) {
-        setError("Current password is incorrect");
-        return;
-      }
-  
-      const updates: { username?: string; password?: string } = {};
-  
-      if (username !== userData.username) {
-        updates.username = username;
-      }
-  
-      if (newPassword) {
-        updates.password = newPassword;
-      }
-  
-      if (Object.keys(updates).length > 0) {
-        await updateDoc(userDocRef, updates);
-        setCurrentPassword("");
-        setNewPassword("");
-        setConfirmNewPassword("");
-  
-        toast.success("Account details updated successfully!", {
-          autoClose: 3000,
-        });
-      } else {
-        setError("No changes to update");
-      }
+
+      // Create a new user document in Firestore
+      const newUserDocRef = doc(db, "users", username);
+      await setDoc(newUserDocRef, {
+        username,
+        password,
+        role: "staff",
+      });
+
+      setUsername("");
+      setPassword("");
+      setConfirmPassword("");
+
+      toast.success("Account created successfully!", {
+        autoClose: 3000,
+      });
     } catch (err) {
-      console.error("Error updating account:", err);
-      setError("Failed to update account. Please try again.");
+      console.error("Error creating account:", err);
+      setError("Failed to create account. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -153,11 +108,10 @@ const UpdateAccount: React.FC = () => {
                 Back
               </Button>
             </div>
-            <span className="text-black_ text-xl">Edit Account</span>
+            <span className="text-black_ text-xl">Add Account</span>
           </CardTitle>
           <CardDescription>
-            Update your account settings. You'll need your current password to
-            make changes.
+            Create a new staff account. You'll need to provide a username and password.
           </CardDescription>
         </CardHeader>
 
@@ -165,10 +119,7 @@ const UpdateAccount: React.FC = () => {
           <CardContent className="space-y-4 mb-3">
             <div className="space-y-1 text-black_">
               <Label htmlFor="username">
-                Username{" "}
-                <span className="text-gray-500 italic font-normal text-xs">
-                  (enter your username/desired username)
-                </span>
+                Username
                 <span className="text-red-500 ml-0.5">*</span>
               </Label>
               <Input
@@ -178,52 +129,37 @@ const UpdateAccount: React.FC = () => {
                 value={username}
                 onChange={handleUsernameChange}
                 placeholder="Enter new username"
-              />
-            </div>
-
-            <div className="space-y-1 text-black_">
-              <Label htmlFor="currentPassword">
-                Current Password
-                <span className="text-red-500 ml-0.5">*</span>
-              </Label>
-              <Input
-                className="rounded"
-                type={showPasswords ? "text" : "password"}
-                id="currentPassword"
-                value={currentPassword}
-                onChange={handleCurrentPasswordChange}
                 required
-                placeholder="Enter current password"
               />
             </div>
 
             <div className="space-y-1 text-black_">
-              <Label htmlFor="newPassword">
-                New Password
+              <Label htmlFor="password">
+                Password
                 <span className="text-red-500 ml-0.5">*</span>
               </Label>
               <Input
                 className="rounded"
                 type={showPasswords ? "text" : "password"}
-                id="newPassword"
-                value={newPassword}
-                onChange={handleNewPasswordChange}
+                id="password"
+                value={password}
+                onChange={handlePasswordChange}
                 required
                 placeholder="Enter new password"
               />
             </div>
 
             <div className="space-y-1 text-black_">
-              <Label htmlFor="confirmNewPassword">
-                Confirm New Password
+              <Label htmlFor="confirmPassword">
+                Confirm Password
                 <span className="text-red-500 ml-0.5">*</span>
               </Label>
               <Input
                 className="rounded"
                 type={showPasswords ? "text" : "password"}
-                id="confirmNewPassword"
-                value={confirmNewPassword}
-                onChange={handleConfirmNewPasswordChange}
+                id="confirmPassword"
+                value={confirmPassword}
+                onChange={handleConfirmPasswordChange}
                 required
                 placeholder="Confirm new password"
               />
@@ -263,10 +199,10 @@ const UpdateAccount: React.FC = () => {
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Updating...
+                  Creating...
                 </>
               ) : (
-                "Update Account"
+                "Create Account"
               )}
             </Button>
           </CardFooter>
@@ -276,4 +212,4 @@ const UpdateAccount: React.FC = () => {
   );
 };
 
-export default UpdateAccount;
+export default AddAccount;
