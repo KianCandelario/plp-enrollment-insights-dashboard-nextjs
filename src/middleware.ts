@@ -47,5 +47,10 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard', '/update_account'],
+  matcher: [
+    '/dashboard', 
+    '/update_account', 
+    '/add_account', 
+    '/login_history'
+  ],
 };
