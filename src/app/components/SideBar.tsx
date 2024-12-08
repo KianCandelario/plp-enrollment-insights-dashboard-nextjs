@@ -22,7 +22,11 @@ export function SideBar({ children }: any) {
   return (
     <div className="h-screen flex flex-col border-r min-h-screen bg-gray-100">
       <div className="w-full flex justify-end py-3 pr-3">
-        <InfoButton />
+        {isAdmin && (
+            <div>
+              <InfoButton />
+            </div>
+          )}
       </div>
       <p className="text-slate-500 text-xs font-bold mb-3 pl-3">Colleges</p>
       <div className="flex-1 w-full px-3 overflow-y-auto">
