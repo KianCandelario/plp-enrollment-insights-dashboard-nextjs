@@ -70,6 +70,11 @@ const Account = () => {
               <ChevronsRight /> Login History
             </DropdownMenuItem>
           </Link>
+          <Link href="/dpa_policy">
+            <DropdownMenuItem className="hover:cursor-pointer">
+              <ChevronsRight /> DPA Policy
+            </DropdownMenuItem>
+          </Link>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
