@@ -3,8 +3,8 @@ import "./globals.css";
 import { GeistSans } from "geist/font/sans";
 
 export const metadata: Metadata = {
-  title: "PLP Enrollment Dashboard",
-  description: "A website that provides insights about PLP Enrollment",
+  title: "PLP Students' Ecological Profile Dashboard",
+  description: "A website that automates report generation and provides enrollment forecasts",
 };
 
 export default function RootLayout({
