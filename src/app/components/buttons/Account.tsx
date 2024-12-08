@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronsUpDown, User2, ChevronsRight } from "lucide-react";
+import { ChevronsUpDown, ChevronsRight, SettingsIcon } from "lucide-react";
 import { quicksand } from "@/app/utilities/fonts";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -50,8 +50,8 @@ const Account = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" side="right" className="w-56 rounded">
         <DropdownMenuLabel>
-          <User2 className="mb-1" />
-          Account
+          <SettingsIcon className="mb-1" />
+          Settings
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
@@ -63,6 +63,11 @@ const Account = () => {
           <Link href="/add_account">
             <DropdownMenuItem className="hover:cursor-pointer">
               <ChevronsRight /> Add Account
+            </DropdownMenuItem>
+          </Link>
+          <Link href="/login_history">
+            <DropdownMenuItem className="hover:cursor-pointer">
+              <ChevronsRight /> Login History
             </DropdownMenuItem>
           </Link>
         </DropdownMenuGroup>
