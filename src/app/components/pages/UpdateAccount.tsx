@@ -61,7 +61,7 @@ const UpdateAccount: React.FC = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
+  
     // Validate new password if it's being changed
     if (newPassword) {
       const passwordValidation = validatePassword(newPassword);
@@ -70,47 +70,47 @@ const UpdateAccount: React.FC = () => {
         return;
       }
     }
-
+  
     if (newPassword !== confirmNewPassword) {
       setError("New passwords do not match");
       return;
     }
-
+  
     try {
       setIsLoading(true);
       setError("");
-
-      const userDocRef = doc(db, "users", "usersID");
+  
+      const userDocRef = doc(db, "users", username);
       const userDoc = await getDoc(userDocRef);
-
+  
       if (!userDoc.exists()) {
         setError("User not found");
         return;
       }
-
+  
       const userData = userDoc.data();
-
+  
       if (userData.password !== currentPassword) {
         setError("Current password is incorrect");
         return;
       }
-
+  
       const updates: { username?: string; password?: string } = {};
-
+  
       if (username !== userData.username) {
         updates.username = username;
       }
-
+  
       if (newPassword) {
         updates.password = newPassword;
       }
-
+  
       if (Object.keys(updates).length > 0) {
         await updateDoc(userDocRef, updates);
         setCurrentPassword("");
         setNewPassword("");
         setConfirmNewPassword("");
-
+  
         toast.success("Account details updated successfully!", {
           autoClose: 3000,
         });
